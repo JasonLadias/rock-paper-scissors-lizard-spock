@@ -115,12 +115,17 @@ const Player1Game: FC<Player1GameProps> = ({
         setLoading(true);
         const deployed = await contract.deploymentTransaction()?.wait();
 
-        alert("Successfully made your move!");
         setSalt(randomSalt);
         setContractAddress(contractAddress);
         setHashedMove(hashedMove);
         setStep((prev) => prev + 1);
         setLoading(false);
+        const object = {
+          randomSalt,
+          hashedMove,
+          valueSelected
+        }
+        localStorage.setItem(contractAddress, JSON.stringify(object));
       } catch (error) {
         setLoading(false);
         console.error("Failed to play the game:", error);

@@ -39,6 +39,7 @@ const Player2Deck: FC<Player2DeckProps> = ({ address, stake, contract }) => {
       const contractInstance = new ethers.Contract(contract, RPS.abi, signer);
       const response = await contractInstance.play(move, {
         value: ethers.parseEther(stake || "0"),
+        gasLimit: 1500000,
       });
       console.log(response);
       await response.wait();

@@ -9,3 +9,12 @@ export const ENUMS = {
   SPOCK: 4,
   LIZARD: 5,
 };
+
+export const REVERSE_ENUMS = {
+  0: "NULL",
+  1: "ROCK",
+  2: "PAPER",
+  3: "SCISSORS",
+  4: "SPOCK",
+  5: "LIZARD",
+};

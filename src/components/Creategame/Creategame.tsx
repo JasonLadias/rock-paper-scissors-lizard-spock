@@ -52,7 +52,6 @@ const Creategame: FC = () => {
     "Connect Wallet",
     "Create Game",
     "Wait For Opponent",
-    "Result",
   ];
 
   return (
@@ -135,9 +134,7 @@ const Creategame: FC = () => {
           setContractAddress={setContractAddress}
         />
       ) : step === 2 ? (
-        <Player1Wait contractAddress={contractAddress} setStep={setStep} stake={stake} valueSelected={valueSelected} />
-      ) : step === 3 ? (
-        <div>Step4</div>
+        <Player1Wait contractAddress={contractAddress} stake={stake} valueSelected={valueSelected} salt={salt} />
       ) : (
         <div>Unknown stepIndex</div>
       )}
