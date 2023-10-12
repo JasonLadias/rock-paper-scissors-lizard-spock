@@ -12,6 +12,7 @@ import { FC, useState } from "react";
 import ConnectWallet from "./ConnectWallet";
 import Player1Game from "./Player1Game";
 import { ENUMS } from "@/utilities/constants";
+import Player1Wait from "./Player1Wait";
 
 const Creategame: FC = () => {
   const [address, setAddress] = useState<null | string>(null);
@@ -25,6 +26,8 @@ const Creategame: FC = () => {
   const [stakeError, setStakeError] = useState<boolean | string>(false);
   const [step, setStep] = useState(0);
   const [hashedMove, setHashedMove] = useState<null | string>(null);
+  const [salt, setSalt] = useState<null | Uint8Array>(null);
+  const [contractAddress, setContractAddress] = useState<null | string>(null);
 
   const handleSelectValue = (value: keyof typeof ENUMS) => {
     setValueSelected(value);
@@ -127,9 +130,12 @@ const Creategame: FC = () => {
           setValueError={setValueError}
           setOpponentAddressError={setOpponentAddressError}
           setStakeError={setStakeError}
+          setHashedMove={setHashedMove}
+          setSalt={setSalt}
+          setContractAddress={setContractAddress}
         />
       ) : step === 2 ? (
-        <div>Step3</div>
+        <Player1Wait contractAddress={contractAddress} setStep={setStep} stake={stake} valueSelected={valueSelected} />
       ) : step === 3 ? (
         <div>Step4</div>
       ) : (

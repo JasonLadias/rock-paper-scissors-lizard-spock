@@ -22,6 +22,9 @@ type Player1GameProps = {
     React.SetStateAction<boolean | string>
   >;
   setStakeError: React.Dispatch<React.SetStateAction<boolean | string>>;
+  setHashedMove: React.Dispatch<React.SetStateAction<string | null>>;
+  setSalt: React.Dispatch<React.SetStateAction<Uint8Array | null>>;
+  setContractAddress: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const Player1Game: FC<Player1GameProps> = ({
@@ -39,8 +42,11 @@ const Player1Game: FC<Player1GameProps> = ({
   setValueError,
   setOpponentAddressError,
   setStakeError,
+  setHashedMove,
+  setSalt,
+  setContractAddress,
 }) => {
-
+  const [loading, setLoading] = useState(false);
   const validateInput = () => {
     let error = false;
     if (!valueSelected) {
@@ -65,7 +71,7 @@ const Player1Game: FC<Player1GameProps> = ({
       error = true;
     }
     return error;
-  }
+  };
 
   const handlePlay = async () => {
     if (!validateInput() && valueSelected) {
@@ -73,11 +79,14 @@ const Player1Game: FC<Player1GameProps> = ({
         valueSelected: ${valueSelected}
         opponentAddress: ${opponentAddress}
         stake: ${stake}
-      `)
+      `);
 
       const randomSalt = ethers.randomBytes(32);
 
-      const hashedMove = ethers.solidityPackedKeccak256(["uint8", "bytes32"], [ENUMS[valueSelected], randomSalt])
+      const hashedMove = ethers.solidityPackedKeccak256(
+        ["uint8", "bytes32"],
+        [ENUMS[valueSelected], randomSalt]
+      );
 
       try {
         const ethereum = window?.ethereum;
@@ -87,94 +96,118 @@ const Player1Game: FC<Player1GameProps> = ({
         }
         const provider = new ethers.BrowserProvider(ethereum);
         const signer = await provider.getSigner();
-        const contractInstance = new ethers.ContractFactory(RPS.abi, RPS.bytecode, provider);
-        console.log(contractInstance)
-        const contract = await contractInstance.deploy({
-          args: [hashedMove, opponentAddress],
-          gas: "1500000",
-          gasPrice: "12000000000",
-          value: "100000000000000"
-        })
-        console.log(contract);
-        const deployed = await contract.deploymentTransaction();
-        console.log(deployed)
+        const contractInstance = new ethers.ContractFactory(
+          RPS.abi,
+          RPS.bytecode,
+          signer
+        );
+        const contract = await contractInstance.deploy(
+          hashedMove,
+          opponentAddress,
+          {
+            from: address,
+            value: ethers.parseUnits(stake ?? "0.0001", "ether"),
+            gasLimit: 1500000,
+          }
+        );
+        const contractAddress = await contract.getAddress();
+        console.log(contractAddress);
+        setLoading(true);
+        const deployed = await contract.deploymentTransaction()?.wait();
+
         alert("Successfully made your move!");
+        setSalt(randomSalt);
+        setContractAddress(contractAddress);
+        setHashedMove(hashedMove);
+        setStep((prev) => prev + 1);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.error("Failed to play the game:", error);
         alert("Failed to play the game. See the console for more information.");
       }
     }
-  }
-
-
+  };
 
   return (
     <Box
       sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}
     >
-      <Typography variant="h6">Welcome {address} </Typography>
-      <Typography variant="h6">Please Select A Value From Below</Typography>
-      <Grid
-        container
-        direction="row"
-        alignItems="flex-start"
-        justifyContent="space-between"
-      >
-        {Object.keys(ENUMS).map((keyEnum) => {
-          return (
-            <Grid
-              onClick={() => handleValueSelected(keyEnum as keyof typeof ENUMS)}
-              key={keyEnum}
-              item
-              xs={2}
-              sx={{
-                minHeight: "100px",
-                p: 1,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                bgcolor: keyEnum === valueSelected ? blue[200] : "white",
-                border: "1px solid black",
-                borderRadius: 2,
-                "&:hover": {
-                  cursor: "pointer",
-                  bgcolor: blue[400],
-                },
-              }}
-            >
-              {keyEnum}
-            </Grid>
-          );
-        })}
-      </Grid>
-      <TextField
-        id="outlined-basic"
-        label="Enter Opponent Address"
-        variant="outlined"
-        fullWidth
-        value={opponentAddress}
-        onChange={handleOpponentAddress}
-        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-        error={!!opponentAddressError}
-        helperText={opponentAddressError}
-      />
-      <TextField
-        id="outlined-basic"
-        label="Enter Stake Amount (ETH)"
-        variant="outlined"
-        type="number"
-        fullWidth
-        value={stake}
-        onChange={handleStake}
-        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-        error={!!stakeError}
-        helperText={stakeError}
-      />
-      {valueSelected && opponentAddress && stake && (
-        <Button variant="contained" onClick={handlePlay}>
-          Play
-        </Button>
+      {loading ? (
+        <>
+          {" "}
+          <Typography variant="h6">Welcome {address} </Typography>
+          <Typography variant="h6">Your Transaction is being transmitted please wait.</Typography>
+        </>
+      ) : (
+        <>
+          <Typography variant="h6">Welcome {address} </Typography>
+          <Typography variant="h6">Please Select A Value From Below</Typography>
+          <Grid
+            container
+            direction="row"
+            alignItems="flex-start"
+            justifyContent="space-between"
+          >
+            {Object.keys(ENUMS).map((keyEnum) => {
+              return (
+                <Grid
+                  onClick={() =>
+                    handleValueSelected(keyEnum as keyof typeof ENUMS)
+                  }
+                  key={keyEnum}
+                  item
+                  xs={2}
+                  sx={{
+                    minHeight: "100px",
+                    p: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    bgcolor: keyEnum === valueSelected ? blue[200] : "white",
+                    border: "1px solid black",
+                    borderRadius: 2,
+                    "&:hover": {
+                      cursor: "pointer",
+                      bgcolor: blue[400],
+                    },
+                  }}
+                >
+                  {keyEnum}
+                </Grid>
+              );
+            })}
+          </Grid>
+          <TextField
+            id="outlined-basic"
+            label="Enter Opponent Address"
+            variant="outlined"
+            fullWidth
+            value={opponentAddress}
+            onChange={handleOpponentAddress}
+            sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+            error={!!opponentAddressError}
+            helperText={opponentAddressError}
+          />
+          <TextField
+            id="outlined-basic"
+            label="Enter Stake Amount (ETH)"
+            variant="outlined"
+            type="number"
+            fullWidth
+            value={stake}
+            onChange={handleStake}
+            sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+            error={!!stakeError}
+            helperText={stakeError}
+          />
+          {valueSelected && opponentAddress && stake && (
+            <Button variant="contained" onClick={handlePlay}>
+              Play
+            </Button>
+          )}
+        </>
       )}
     </Box>
   );
