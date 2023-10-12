@@ -15,6 +15,8 @@ import {
   J1_STORAGE_POSITION,
   J2_STORAGE_POSITION,
 } from "@/utilities/constants";
+import Player2Deck from "./Player2Deck";
+import Player1Deck from "./Player1Deck";
 
 type GamepageProps = {
   contract: string;
@@ -33,16 +35,11 @@ function extractAddressFromPaddedValue(paddedValue: string): string {
 const Gamepage: FC<GamepageProps> = ({ contract }) => {
   const [address, setAddress] = useState<null | string>(null);
   const [player, setPlayer] = useState<null | -1 | 1 | 2>(null);
-  const [valueSelected, setValueSelected] = useState<null | keyof typeof ENUMS>(
-    null
-  );
+
   const [stake, setStake] = useState<null | string>(null);
 
   let contractInstance: ethers.Contract;
 
-  const handleSelectValue = (value: keyof typeof ENUMS) => {
-    setValueSelected(value);
-  };
 
   const requestAccount = async () => {
     try {
@@ -121,34 +118,7 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
     }
   };
 
-  const playGame = async () => {
-    if (!valueSelected || !address) {
-      alert("Please select a value or connect your wallet first");
-      return;
-    }
 
-    const move = ENUMS[valueSelected]; // Convert the selected string value to its ENUMS equivalent
-
-    try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const contractInstance = new ethers.Contract(contract, RPS.abi, signer);
-      const response = await contractInstance.play(move, {
-        value: ethers.parseEther(stake || "0"),
-      });
-      console.log(response)
-      await response.wait();
-      alert("Successfully made your move!");
-    } catch (error) {
-      console.error("Failed to play the game:", error);
-      alert("Failed to play the game. See the console for more information.");
-    }
-  };
 
   useEffect(() => {
     if (address) {
@@ -178,44 +148,11 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
       {player && player !== -1 && <p>Welcome Player {player}</p>}
       {stake && <p>Stake: {stake} ETH</p>}
       {player === -1 && <p>You are not a player in this game</p>}
-      {player && player === 2 && (
-        <>
-          <Typography variant="h6">Please Select A Value From Below</Typography>
-          <Grid
-            container
-            direction="row"
-            alignItems="flex-start"
-            justifyContent="space-between"
-          >
-            {Object.keys(ENUMS).map((keyEnum) => {
-              return (
-                <Grid
-                  key={keyEnum}
-                  item
-                  xs={2}
-                  sx={{ minHeight: "100px", p: 1 }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() =>
-                      handleSelectValue(keyEnum as keyof typeof ENUMS)
-                    }
-                  >
-                    {keyEnum}
-                  </Button>
-                </Grid>
-              );
-            })}
-          </Grid>
-          {valueSelected && (
-            <Typography variant="h6">You Selected {valueSelected}</Typography>
-          )}
-          {valueSelected && (
-            <Button variant="contained" onClick={playGame}>
-              Play
-            </Button>
-          )}
-        </>
+      {player === 1 && stake && address && (
+        <Player1Deck contract={contract} stake={stake} address={address} />
+      )}
+      {player === 2 && stake && address && (
+        <Player2Deck contract={contract} stake={stake} address={address} />
       )}
     </Container>
   );
