@@ -17,6 +17,8 @@ import {
 } from "@/utilities/constants";
 import Player2Deck from "./Player2Deck";
 import Player1Deck from "./Player1Deck";
+import Anchor from "../Anchor";
+import { yellow } from "@mui/material/colors";
 
 type GamepageProps = {
   contract: string;
@@ -36,10 +38,9 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
   const [address, setAddress] = useState<null | string>(null);
   const [player, setPlayer] = useState<null | -1 | 1 | 2>(null);
 
-  const [stake, setStake] = useState<null | string>(null);
+  const [stake, setStake] = useState<null | string | -1>(null);
 
   let contractInstance: ethers.Contract;
-
 
   const requestAccount = async () => {
     try {
@@ -98,7 +99,7 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
       console.log(`Stake: ${stakeValue.toString()}`);
 
       if (!stakeValue) {
-        alert("The provided address is not a smart contract");
+        setStake(-1);
         return;
       } else {
         setStake(ethers.formatEther(stakeValue));
@@ -118,8 +119,6 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
     }
   };
 
-
-
   useEffect(() => {
     if (address) {
       connectWallet();
@@ -131,27 +130,79 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
       maxWidth="lg"
       sx={{
         minHeight: "100vh",
-        py: 2,
+        py: 10,
         display: "flex",
         flexDirection: "column",
-        gap: 2,
+        gap: 5,
         alignItems: "center",
       }}
     >
-      <h1>GamePage {contract} </h1>
-      {address && <p>Wallet Address: {address}</p>}
+      <Typography variant="h4" align="center" gutterBottom>
+        Game With Contract Address <br /> <span></span>
+        {contract}
+      </Typography>
+      <Box
+        sx={{
+          p: 3,
+          bgcolor: yellow[500],
+          borderRadius: 2,
+          boxShadow: 3,
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
+        <Typography
+          variant="body1"
+          fontWeight="bold"
+          textAlign="left"
+          color="primary"
+        >
+          Note: This game should be played on GOERLI TESTNET
+        </Typography>
+      </Box>
       {!address && (
         <Button variant="contained" onClick={requestAccount}>
           Connect Wallet
         </Button>
       )}
-      {player && player !== -1 && <p>Welcome Player {player}</p>}
-      {stake && <p>Stake: {stake} ETH</p>}
-      {player === -1 && <p>You are not a player in this game</p>}
-      {player === 1 && stake && address && (
+      {player && player !== -1 && (
+        <Typography variant="body1">Welcome Player {player}</Typography>
+      )}
+      {stake && player !== -1 && (
+        <Typography variant="body1">
+          {stake === -1 ? (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="body1">
+                This game has been resolved
+              </Typography>
+              <Anchor href="/">
+                <Button variant="contained">Go To Homepage</Button>
+              </Anchor>
+            </Box>
+          ) : (
+            `Stake: ${stake} ETH`
+          )}
+        </Typography>
+      )}
+      {player === -1 && (
+        <Typography variant="body1" color="error">
+          You are not a player in this game
+        </Typography>
+      )}
+
+      {player === 1 && stake && stake !== -1 && address && (
         <Player1Deck contract={contract} stake={stake} address={address} />
       )}
-      {player === 2 && stake && address && (
+
+      {player === 2 && stake && stake !== -1 && address && (
         <Player2Deck contract={contract} stake={stake} address={address} />
       )}
     </Container>

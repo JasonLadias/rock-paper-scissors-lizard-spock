@@ -21,6 +21,7 @@ const Player1Wait: FC<Player1WaitProps> = ({
 }) => {
   const [player2played, setPlayer2played] = useState(false);
   const [player2timeout, setPlayer2timeout] = useState(false);
+  const [gameResolved, setGameResolved] = useState(false);
   const [refunded, setRefunded] = useState(false);
   const [resolved, setResolved] = useState(false);
   const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0); // [0, 1, 2
@@ -44,17 +45,24 @@ const Player1Wait: FC<Player1WaitProps> = ({
       const player2Move = await contractInstance.c2();
       const lastMove = await contractInstance.lastAction();
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+      const currentStake = await contractInstance.stake();
       const timeDifference = currentTimeInSeconds - Number(lastMove);
       console.log("Player 2 Move is", Number(player2Move));
       console.log("Last Action is", Number(lastMove));
       console.log("Time Difference is", timeDifference);
-      if (Number(player2Move) !== 0) {
-        setPlayer2move(Number(player2Move));
-        setPlayer2played(true);
-        clearInterval(timerRef.current!);
-      } else if (timeDifference > 300) {
-        setPlayer2timeout(true);
+      if (Number(currentStake) === 0) {
+        setGameResolved(true);
+      } else {
+        if (Number(player2Move) !== 0) {
+          setPlayer2move(Number(player2Move));
+          setPlayer2played(true);
+          clearInterval(timerRef.current!);
+        } else if (timeDifference > 300) {
+          setPlayer2timeout(true);
+        }
       }
+
+      console.log(currentStake);
     } catch (err) {
       console.log(err);
     }
@@ -105,13 +113,11 @@ const Player1Wait: FC<Player1WaitProps> = ({
         RPS.abi,
         signer
       );
+      const saltUint256 = ethers.toBigInt(salt);
+
       const response = await contractInstance.solve(
         ENUMS[valueSelected],
-        salt,
-        {
-          value: "0",
-          gasLimit: 1500000,
-        }
+        saltUint256
       );
       console.log(response);
       await response.wait();
@@ -133,7 +139,12 @@ const Player1Wait: FC<Player1WaitProps> = ({
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      {player2played ? (
+      {gameResolved ? (
+        <Typography variant="h6">
+          The game is Resolved. Please Check your wallet to see if you win or
+          lose.
+        </Typography>
+      ) : player2played ? (
         <>
           {resolved ? (
             <>
@@ -148,9 +159,7 @@ const Player1Wait: FC<Player1WaitProps> = ({
                 </Typography>
               )}
               <Anchor href="/">
-                <Button variant="contained">
-                  Go To Homepage
-                </Button>
+                <Button variant="contained">Go To Homepage</Button>
               </Anchor>
             </>
           ) : (
@@ -182,9 +191,7 @@ const Player1Wait: FC<Player1WaitProps> = ({
                 {stake} returned to your address as Player 2 timed out
               </Typography>
               <Anchor href="/">
-                <Button variant="contained">
-                  Go To Homepage
-                </Button>
+                <Button variant="contained">Go To Homepage</Button>
               </Anchor>
             </>
           ) : (
@@ -209,7 +216,9 @@ const Player1Wait: FC<Player1WaitProps> = ({
           </Typography>
           <Typography variant="h6">
             Give them the following link{" "}
-            <span style={{ fontWeight: 500 }}>
+            <span
+              style={{ fontWeight: 500, background: "lightgrey", padding: 10 }}
+            >
               {window.location.host}/{contractAddress}
             </span>{" "}
             and wait for them to play.
