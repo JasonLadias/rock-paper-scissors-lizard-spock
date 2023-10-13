@@ -19,6 +19,7 @@ import Player2Deck from "./Player2Deck";
 import Player1Deck from "./Player1Deck";
 import Anchor from "../Anchor";
 import { yellow } from "@mui/material/colors";
+import Head from "next/head";
 
 type GamepageProps = {
   contract: string;
@@ -137,6 +138,9 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
         alignItems: "center",
       }}
     >
+      <Head>
+        <title key="title">Rock Paper Scissors Spock Lizard</title>
+      </Head>
       <Typography variant="h4" align="center" gutterBottom>
         Game With Contract Address <br /> <span></span>
         {contract}

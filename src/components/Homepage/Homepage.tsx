@@ -4,6 +4,7 @@ import { FC, useState } from "react";
 import { useRouter } from "next/router";
 import Anchor from "../Anchor";
 import { ethers } from "ethers";
+import Head from "next/head";
 
 const Homepage: FC = () => {
   const router = useRouter();
@@ -47,6 +48,9 @@ const Homepage: FC = () => {
         alignItems: "center",
       }}
     >
+      <Head>
+        <title key="title">Rock Paper Scissors Spock Lizard</title>
+      </Head>
       <Typography
         variant="h4"
         fontWeight="bold"

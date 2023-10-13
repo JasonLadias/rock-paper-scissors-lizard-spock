@@ -13,6 +13,7 @@ import ConnectWallet from "./ConnectWallet";
 import Player1Game from "./Player1Game";
 import { ENUMS } from "@/utilities/constants";
 import Player1Wait from "./Player1Wait";
+import Head from "next/head";
 
 const Creategame: FC = () => {
   const [address, setAddress] = useState<null | string>(null);
@@ -21,7 +22,9 @@ const Creategame: FC = () => {
   );
   const [valueError, setValueError] = useState<boolean | string>(false);
   const [opponentAddress, setOpponentAddress] = useState<null | string>(null);
-  const [opponentAddressError, setOpponentAddressError] = useState<boolean | string>(false);
+  const [opponentAddressError, setOpponentAddressError] = useState<
+    boolean | string
+  >(false);
   const [stake, setStake] = useState<null | string>(null);
   const [stakeError, setStakeError] = useState<boolean | string>(false);
   const [step, setStep] = useState(0);
@@ -37,22 +40,18 @@ const Creategame: FC = () => {
   const handleSetStake = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStake(e.target.value);
     setStakeError(false);
-  }
+  };
 
   const handleOpponentAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOpponentAddress(e.target.value);
     setOpponentAddressError(false);
-  }
+  };
 
   const handleHashedMove = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHashedMove(e.target.value);
-  }
+  };
 
-  const steps = [
-    "Connect Wallet",
-    "Create Game",
-    "Wait For Opponent",
-  ];
+  const steps = ["Connect Wallet", "Create Game", "Wait For Opponent"];
 
   return (
     <Container
@@ -66,6 +65,9 @@ const Creategame: FC = () => {
         alignItems: "center",
       }}
     >
+      <Head>
+        <title key="title">Rock Paper Scissors Spock Lizard</title>
+      </Head>
       <Typography
         variant="h4"
         fontWeight="bold"
@@ -134,7 +136,12 @@ const Creategame: FC = () => {
           setContractAddress={setContractAddress}
         />
       ) : step === 2 ? (
-        <Player1Wait contractAddress={contractAddress} stake={stake} valueSelected={valueSelected} salt={salt} />
+        <Player1Wait
+          contractAddress={contractAddress}
+          stake={stake}
+          valueSelected={valueSelected}
+          salt={salt}
+        />
       ) : (
         <div>Unknown stepIndex</div>
       )}
