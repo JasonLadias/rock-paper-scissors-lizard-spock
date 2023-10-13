@@ -55,7 +55,7 @@ const Player1Wait: FC<Player1WaitProps> = ({
         clearInterval(timerRef.current!);
       } else {
         if (Number(player2Move) !== 0) {
-          setPlayer2move(Number(player2Move));
+          setPlayer2move(Number(player2Move) as 0 | 1 | 2 | 3 | 4 | 5);
           setPlayer2played(true);
         } else if (timeDifference > 300) {
           setPlayer2timeout(true);
