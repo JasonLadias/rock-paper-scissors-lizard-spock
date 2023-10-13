@@ -69,6 +69,7 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
         gasLimit: 1500000,
       });
       console.log(response);
+      clearInterval(timerRef.current!);
       await response.wait();
       setRefunded(true);
     } catch (error) {
@@ -87,10 +88,24 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: 'center' }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        alignItems: "center",
+      }}
+    >
       {player1resolved ? (
-                  <Typography variant="h6">The game is Resolved. Please Check your wallet to see if you win or lose.</Typography>
-
+        <>
+          <Typography variant="h6">
+            The game is Resolved. Please Check your wallet to see if you win or
+            lose.
+          </Typography>
+          <Anchor href="/">
+            <Button variant="contained">Go To Homepage</Button>
+          </Anchor>
+        </>
       ) : player1timeout ? (
         <>
           {refunded ? (

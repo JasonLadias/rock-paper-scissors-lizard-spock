@@ -1,9 +1,10 @@
 import RPS from "@/abi/RPS";
+import Anchor from "@/components/Anchor";
 import { ENUMS } from "@/utilities/constants";
 import { Button, Grid, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { ethers } from "ethers";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 
 type Player2MoveProps = {
   address: string;
@@ -22,9 +23,32 @@ const Player2Move: FC<Player2MoveProps> = ({
     null
   );
   const [loading, setLoading] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [player1resolved, setPlayer1resolved] = useState(false);
 
   const handleSelectValue = (value: keyof typeof ENUMS) => {
     setValueSelected(value);
+  };
+
+  const checkPlayer1 = async () => {
+    if (!contract) return;
+    try {
+      const ethereum = window?.ethereum;
+      if (!ethereum) {
+        alert("Please install MetaMask");
+        return;
+      }
+      const provider = new ethers.BrowserProvider(ethereum);
+
+      const contractInstance = new ethers.Contract(contract, RPS.abi, provider);
+      const currentStake = await contractInstance.stake();
+      if (Number(currentStake) === 0) {
+        setPlayer1resolved(true);
+        clearInterval(timerRef.current!);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const playGame = async () => {
@@ -53,6 +77,7 @@ const Player2Move: FC<Player2MoveProps> = ({
       localStorage.setItem(contract, "true");
       handleUserPlayed();
       setLoading(false);
+      clearInterval(timerRef.current!);
     } catch (error) {
       console.error("Failed to play the game:", error);
       setLoading(false);
@@ -60,10 +85,28 @@ const Player2Move: FC<Player2MoveProps> = ({
     }
   };
 
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      checkPlayer1();
+    }, 10000);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   return (
     <>
-      {loading ? (
-        <Typography variant="h6">Your Transaction is being Transmitted. Please wait</Typography>
+      {player1resolved ? (
+        <>
+          <Typography variant="h6">You timed out. Player 1 has refunded the amount.</Typography>
+          <Anchor href="/">
+            <Button variant="contained">Go To Homepage</Button>
+          </Anchor>
+        </>
+      ) : loading ? (
+        <Typography variant="h6">
+          Your Transaction is being Transmitted. Please wait
+        </Typography>
       ) : (
         <>
           <Typography variant="h6">Please Select A Value From Below</Typography>

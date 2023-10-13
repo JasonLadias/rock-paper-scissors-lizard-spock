@@ -52,11 +52,11 @@ const Player1Wait: FC<Player1WaitProps> = ({
       console.log("Time Difference is", timeDifference);
       if (Number(currentStake) === 0) {
         setGameResolved(true);
+        clearInterval(timerRef.current!);
       } else {
         if (Number(player2Move) !== 0) {
           setPlayer2move(Number(player2Move));
           setPlayer2played(true);
-          clearInterval(timerRef.current!);
         } else if (timeDifference > 300) {
           setPlayer2timeout(true);
         }
@@ -88,9 +88,11 @@ const Player1Wait: FC<Player1WaitProps> = ({
         value: "0",
         gasLimit: 1500000,
       });
+      clearInterval(timerRef.current!);
       console.log(response);
       await response.wait();
       setRefunded(true);
+      
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -120,8 +122,10 @@ const Player1Wait: FC<Player1WaitProps> = ({
         saltUint256
       );
       console.log(response);
+      clearInterval(timerRef.current!);
       await response.wait();
       setResolved(true);
+      
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -140,10 +144,14 @@ const Player1Wait: FC<Player1WaitProps> = ({
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {gameResolved ? (
-        <Typography variant="h6">
-          The game is Resolved. Please Check your wallet to see if you win or
-          lose.
-        </Typography>
+        <>
+          <Typography variant="h6">
+            You timed out. Player 2 won the game.
+          </Typography>
+          <Anchor href="/">
+            <Button variant="contained">Go To Homepage</Button>
+          </Anchor>
+        </>
       ) : player2played ? (
         <>
           {resolved ? (
