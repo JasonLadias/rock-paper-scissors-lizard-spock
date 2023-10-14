@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Container,
   Step,
   StepLabel,
@@ -21,14 +20,13 @@ const Creategame: FC = () => {
     null
   );
   const [valueError, setValueError] = useState<boolean | string>(false);
-  const [opponentAddress, setOpponentAddress] = useState<null | string>(null);
+  const [opponentAddress, setOpponentAddress] = useState("");
   const [opponentAddressError, setOpponentAddressError] = useState<
     boolean | string
   >(false);
-  const [stake, setStake] = useState<null | string>(null);
+  const [stake, setStake] = useState("");
   const [stakeError, setStakeError] = useState<boolean | string>(false);
   const [step, setStep] = useState(0);
-  const [hashedMove, setHashedMove] = useState<null | string>(null);
   const [salt, setSalt] = useState<null | Uint8Array>(null);
   const [contractAddress, setContractAddress] = useState<null | string>(null);
 
@@ -45,10 +43,6 @@ const Creategame: FC = () => {
   const handleOpponentAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOpponentAddress(e.target.value);
     setOpponentAddressError(false);
-  };
-
-  const handleHashedMove = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHashedMove(e.target.value);
   };
 
   const steps = ["Connect Wallet", "Create Game", "Wait For Opponent"];
@@ -131,7 +125,6 @@ const Creategame: FC = () => {
           setValueError={setValueError}
           setOpponentAddressError={setOpponentAddressError}
           setStakeError={setStakeError}
-          setHashedMove={setHashedMove}
           setSalt={setSalt}
           setContractAddress={setContractAddress}
         />

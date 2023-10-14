@@ -1,7 +1,5 @@
 import type {
   GetServerSideProps,
-  GetStaticPaths,
-  GetStaticProps,
   NextPage,
 } from "next";
 import { NoSsr } from "@mui/material";

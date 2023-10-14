@@ -1,16 +1,7 @@
 import { FC, useEffect, useState } from "react";
-import {
-  Container,
-  Button,
-  Box,
-  TextField,
-  Typography,
-  Grid,
-} from "@mui/material";
+import { Container, Button, Box, Typography } from "@mui/material";
 import { ethers } from "ethers";
-import RPS from "@/abi/RPS";
 import {
-  ENUMS,
   GOERLI_NETWORK,
   J1_STORAGE_POSITION,
   J2_STORAGE_POSITION,

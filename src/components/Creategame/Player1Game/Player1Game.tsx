@@ -9,8 +9,8 @@ import { FC, useState } from "react";
 type Player1GameProps = {
   address: string | null;
   setStep: React.Dispatch<React.SetStateAction<number>>;
-  opponentAddress: string | null;
-  stake: string | null;
+  opponentAddress: string;
+  stake: string;
   valueSelected: keyof typeof ENUMS | null;
   handleValueSelected: (value: keyof typeof ENUMS) => void;
   handleOpponentAddress: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -23,7 +23,6 @@ type Player1GameProps = {
     React.SetStateAction<boolean | string>
   >;
   setStakeError: React.Dispatch<React.SetStateAction<boolean | string>>;
-  setHashedMove: React.Dispatch<React.SetStateAction<string | null>>;
   setSalt: React.Dispatch<React.SetStateAction<Uint8Array | null>>;
   setContractAddress: React.Dispatch<React.SetStateAction<string | null>>;
 };
@@ -43,7 +42,6 @@ const Player1Game: FC<Player1GameProps> = ({
   setValueError,
   setOpponentAddressError,
   setStakeError,
-  setHashedMove,
   setSalt,
   setContractAddress,
 }) => {
@@ -116,7 +114,6 @@ const Player1Game: FC<Player1GameProps> = ({
 
         setSalt(randomSalt);
         setContractAddress(contractAddress);
-        setHashedMove(hashedMove);
         setStep((prev) => prev + 1);
         setLoading(false);
         const object = {

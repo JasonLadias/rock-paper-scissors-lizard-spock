@@ -8,7 +8,7 @@ import Head from "next/head";
 
 const Homepage: FC = () => {
   const router = useRouter();
-  const [existingContract, setExistingContract] = useState<null | string>(null);
+  const [existingContract, setExistingContract] = useState<string>("");
   const [existingContractError, setExistingContractError] = useState<
     boolean | string
   >(false);
