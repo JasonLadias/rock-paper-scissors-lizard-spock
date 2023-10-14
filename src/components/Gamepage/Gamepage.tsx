@@ -23,18 +23,25 @@ declare global {
   }
 }
 
+// Extract the address from the padded value
 function extractAddressFromPaddedValue(paddedValue: string): string {
   return "0x" + paddedValue.slice(-40);
 }
 
 const Gamepage: FC<GamepageProps> = ({ contract }) => {
   const [address, setAddress] = useState<null | string>(null);
+  // -1 means not a player, 1 means player 1, 2 means player 2 and null means not yet determined
   const [player, setPlayer] = useState<null | -1 | 1 | 2>(null);
-
+  // -1 means game has been resolved, null means not yet determined
   const [stake, setStake] = useState<null | string | -1>(null);
 
   let contractInstance: ethers.Contract;
 
+  /**
+   * This function requests the user's account from MetaMask
+   * ensures the user is connected to the Goerli Test Network
+   * and sets the user's address in state
+   */
   const requestAccount = async () => {
     if (!ensureMetaMask()) return;
 
@@ -57,6 +64,14 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
     }
   };
 
+  /**
+   * This function connects to the contract and checks:
+   * - If the contract is valid
+   * - If the user is a player in the game
+   * - The current stake of the game
+   *   - If the stake is 0, the game has been resolved
+   *   - If the stake is not 0, the game is still ongoing
+   */
   const connectWallet = async () => {
     if (!ensureMetaMask()) return;
     try {
@@ -86,8 +101,8 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
       contractInstance = await getContractInstance(contract);
 
       const stakeValue = await contractInstance.stake();
-      console.log(`Stake: ${stakeValue.toString()}`);
 
+      // If the stake is 0, the game has been resolved
       if (!stakeValue) {
         setStake(-1);
         return;
@@ -97,10 +112,13 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
 
       // Compare the given address with j1 and j2
       if (address === j1Value) {
+        // If the address is j1, set player to 1
         setPlayer(1);
       } else if (address === j2Value) {
+        // If the address is j2, set player to 2
         setPlayer(2);
       } else {
+        // If the address is neither j1 nor j2, set player to -1(not a player)
         setPlayer(-1);
         alert("You are not a player in this game");
       }

@@ -1,9 +1,4 @@
-import { ENUMS } from "@/utilities/constants";
-import { Button, Grid, Typography } from "@mui/material";
-import { ethers } from "ethers";
 import { FC, useState } from "react";
-import RPS from "@/abi/RPS";
-import { blue } from "@mui/material/colors";
 import useTransactionDataPlayer2 from "@/utilities/useTransactionDataPlayer2";
 import Player2Move from "./Player2Move";
 import Player2Wait from "./Player2Wait";

@@ -1,6 +1,5 @@
-import RPS from "@/abi/RPS";
 import Anchor from "@/components/Anchor";
-import { ENUMS } from "@/utilities/constants";
+import { ENUMS, GAS_LIMIT } from "@/utilities/constants";
 import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 import { Button, Grid, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
@@ -31,16 +30,16 @@ const Player2Move: FC<Player2MoveProps> = ({
     setValueSelected(value);
   };
 
+  /**
+   * Checks if the stake of the game is 0, which means that Player 1 has refunded the game.
+   */
   const checkPlayer1 = async () => {
     if (!contract) return;
     if (!ensureMetaMask()) return;
     try {
-      const ethereum = window?.ethereum;
-
-      const provider = new ethers.BrowserProvider(ethereum);
-
       const contractInstance = await getContractInstance(contract);
       const currentStake = await contractInstance.stake();
+      // If the current stake is 0, the game is resolved by Player 1
       if (Number(currentStake) === 0) {
         setPlayer1resolved(true);
         clearInterval(timerRef.current!);
@@ -50,6 +49,13 @@ const Player2Move: FC<Player2MoveProps> = ({
     }
   };
 
+  /**
+   * Plays the game by calling the play function on the contract.
+   * - Sets the loading state to true.
+   * - Gets the contract instance.
+   * - Calls the play function on the contract with the selected move and the stake.
+   * - Sets the loading state to false.
+   */
   const playGame = async () => {
     if (!valueSelected || !address) {
       alert("Please select a value or connect your wallet first");
@@ -62,13 +68,17 @@ const Player2Move: FC<Player2MoveProps> = ({
       setLoading(true);
       const contractInstance = await getContractInstance(contract, true);
 
+      // Call the play function on the contract
       const response = await contractInstance.play(move, {
-        value: ethers.parseEther(stake || "0"),
-        gasLimit: 1500000,
+        value: ethers.parseEther(stake),
+        gasLimit: GAS_LIMIT,
       });
       await response.wait();
+      // Set the contract address in local storage and set the user played to true
+      // We also raise a useState flag for the parent component to know that the user has played
       localStorage.setItem(contract, "true");
       handleUserPlayed();
+      // Clear the timer and set the loading state to false
       setLoading(false);
       clearInterval(timerRef.current!);
     } catch (error) {
@@ -78,6 +88,10 @@ const Player2Move: FC<Player2MoveProps> = ({
     }
   };
 
+  /**
+   * This hook sets a timer to check if Player 1 has refunded the game.
+   * If Player 1 has refunded the game,
+   */
   useEffect(() => {
     timerRef.current = setInterval(() => {
       checkPlayer1();

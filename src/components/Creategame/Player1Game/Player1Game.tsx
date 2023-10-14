@@ -1,5 +1,5 @@
 import RPS from "@/abi/RPS";
-import { ENUMS } from "@/utilities/constants";
+import { ENUMS, GAS_LIMIT } from "@/utilities/constants";
 import { ensureMetaMask } from "@/utilities/helpers";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
@@ -72,16 +72,17 @@ const Player1Game: FC<Player1GameProps> = ({
     return error;
   };
 
+  /**
+   * The `handlePlay` function is responsible for initiating a game move.
+   * It first validates the input and prepares a move by hashing the selected value along with a random salt.
+   * It then interacts with the Ethereum blockchain to deploy a contract for the game move.
+   * If successful, it stores necessary game data into the local storage.
+   */
   const handlePlay = async () => {
     if (!validateInput() && valueSelected) {
-      console.log(`
-        valueSelected: ${valueSelected}
-        opponentAddress: ${opponentAddress}
-        stake: ${stake}
-      `);
-
+      // Generate a random salt using ethers.
       const randomSalt = ethers.randomBytes(32);
-
+      // Hash the selected move with the random salt to produce a hashed move.
       const hashedMove = ethers.solidityPackedKeccak256(
         ["uint8", "bytes32"],
         [ENUMS[valueSelected], randomSalt]
@@ -93,25 +94,29 @@ const Player1Game: FC<Player1GameProps> = ({
 
         const provider = new ethers.BrowserProvider(ethereum);
         const signer = await provider.getSigner();
+
+        // Create a new contract instance with the ABI, bytecode, and signer.
         const contractInstance = new ethers.ContractFactory(
           RPS.abi,
           RPS.bytecode,
           signer
         );
+
+        // Deploy the new contract with the hashed move, opponent's address, and other necessary parameters.
         const contract = await contractInstance.deploy(
           hashedMove,
           opponentAddress,
           {
             from: address,
-            value: ethers.parseUnits(stake ?? "0.0001", "ether"),
-            gasLimit: 1500000,
+            value: ethers.parseUnits(stake, "ether"),
+            gasLimit: GAS_LIMIT,
           }
         );
         const contractAddress = await contract.getAddress();
-        console.log(contractAddress);
         setLoading(true);
-        const deployed = await contract.deploymentTransaction()?.wait();
+        await contract.deploymentTransaction()?.wait();
 
+        // Set the necessary game data.
         setSalt(randomSalt);
         setContractAddress(contractAddress);
         setStep((prev) => prev + 1);
@@ -121,6 +126,7 @@ const Player1Game: FC<Player1GameProps> = ({
           hashedMove,
           valueSelected,
         };
+        // Stores data in local storage in case of page refresh
         localStorage.setItem(contractAddress, JSON.stringify(object));
       } catch (error) {
         setLoading(false);

@@ -11,12 +11,11 @@ type Player1DeckProps = {
 };
 
 const Player1Deck: FC<Player1DeckProps> = ({ address, stake, contract }) => {
-  const { randomSalt, hashedMove, valueSelected } =
-    useTransactionData(contract);
+  const { randomSalt, valueSelected } = useTransactionData(contract);
 
   return (
     <>
-      {randomSalt && randomSalt?.length > 0 && hashedMove && valueSelected ? (
+      {randomSalt && randomSalt?.length > 0 && valueSelected ? (
         <>
           <Player1Wait
             contractAddress={contract}

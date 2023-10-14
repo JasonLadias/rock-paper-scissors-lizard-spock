@@ -12,7 +12,12 @@ type TransactionData = {
   valueSelected: keyof typeof ENUMS | null;
 };
 
-// Custom Hook to fetch data from localStorage based on a transaction hash
+/**
+ * Custom hook to fetch from localStorage the data of a transaction:
+ * - randomSalt: The random salt used to generate the hashed move
+ * - hashedMove: The hashed move
+ * - valueSelected: The move selected by the player
+ */
 const useTransactionData = (transactionHash: string) => {
   const [data, setData] = useState<TransactionData>({
     randomSalt: null,

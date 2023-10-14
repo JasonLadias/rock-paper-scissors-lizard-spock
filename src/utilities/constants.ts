@@ -1,6 +1,8 @@
 export const GOERLI_NETWORK = "0x5";
 export const J1_STORAGE_POSITION = 0;
 export const J2_STORAGE_POSITION = 1;
+export const GAS_LIMIT = 1500000;
+export const FIVE_MINUTES = 300;
 
 export const ENUMS = {
   ROCK: 1,

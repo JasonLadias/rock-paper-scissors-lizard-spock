@@ -1,7 +1,4 @@
-import type {
-  GetServerSideProps,
-  NextPage,
-} from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { NoSsr } from "@mui/material";
 import { ethers } from "ethers";
 import Gamepage from "@/components/Gamepage";
