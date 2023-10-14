@@ -1,6 +1,7 @@
 import Anchor from "@/components/Anchor";
 import { ENUMS, GAS_LIMIT } from "@/utilities/constants";
 import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
+import usePlayer1Wait from "@/utilities/customHooks/usePlayer1Wait";
 import { Button, Grid, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { ethers } from "ethers";
@@ -19,34 +20,15 @@ const Player2Move: FC<Player2MoveProps> = ({
   contract,
   handleUserPlayed,
 }) => {
+  const { player1resolved } = usePlayer1Wait({ contractAddress: contract });
+
   const [valueSelected, setValueSelected] = useState<null | keyof typeof ENUMS>(
     null
   );
   const [loading, setLoading] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [player1resolved, setPlayer1resolved] = useState(false);
 
   const handleSelectValue = (value: keyof typeof ENUMS) => {
     setValueSelected(value);
-  };
-
-  /**
-   * Checks if the stake of the game is 0, which means that Player 1 has refunded the game.
-   */
-  const checkPlayer1 = async () => {
-    if (!contract) return;
-    if (!ensureMetaMask()) return;
-    try {
-      const contractInstance = await getContractInstance(contract);
-      const currentStake = await contractInstance.stake();
-      // If the current stake is 0, the game is resolved by Player 1
-      if (Number(currentStake) === 0) {
-        setPlayer1resolved(true);
-        clearInterval(timerRef.current!);
-      }
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   /**
@@ -78,28 +60,13 @@ const Player2Move: FC<Player2MoveProps> = ({
       // We also raise a useState flag for the parent component to know that the user has played
       localStorage.setItem(contract, "true");
       handleUserPlayed();
-      // Clear the timer and set the loading state to false
       setLoading(false);
-      clearInterval(timerRef.current!);
     } catch (error) {
       console.error("Failed to play the game:", error);
       setLoading(false);
       alert("Failed to play the game. See the console for more information.");
     }
   };
-
-  /**
-   * This hook sets a timer to check if Player 1 has refunded the game.
-   * If Player 1 has refunded the game,
-   */
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      checkPlayer1();
-    }, 10000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
 
   return (
     <>

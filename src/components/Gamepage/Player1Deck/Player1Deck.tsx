@@ -1,6 +1,6 @@
 import Anchor from "@/components/Anchor";
 import Player1Wait from "@/components/Creategame/Player1Wait";
-import useTransactionData from "@/utilities/useTransactionData";
+import useTransactionData from "@/utilities/customHooks/useTransactionData";
 import { Button, Typography } from "@mui/material";
 import { FC } from "react";
 

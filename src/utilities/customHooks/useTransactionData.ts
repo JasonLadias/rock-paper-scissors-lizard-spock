@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ENUMS } from "./constants";
+import { ENUMS } from "../constants";
 
 const convertToObjectUint8Array = (obj: Record<string, number>): Uint8Array => {
   const values = Object.values(obj).map((val) => Number(val));

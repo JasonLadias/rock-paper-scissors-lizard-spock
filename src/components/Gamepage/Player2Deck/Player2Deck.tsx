@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import useTransactionDataPlayer2 from "@/utilities/useTransactionDataPlayer2";
+import useTransactionDataPlayer2 from "@/utilities/customHooks/useTransactionDataPlayer2";
 import Player2Move from "./Player2Move";
 import Player2Wait from "./Player2Wait";
 
