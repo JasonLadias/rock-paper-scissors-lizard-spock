@@ -20,6 +20,7 @@ import Player1Deck from "./Player1Deck";
 import Anchor from "../Anchor";
 import { yellow } from "@mui/material/colors";
 import Head from "next/head";
+import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 
 type GamepageProps = {
   contract: string;
@@ -44,12 +45,10 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
   let contractInstance: ethers.Contract;
 
   const requestAccount = async () => {
+    if (!ensureMetaMask()) return;
+
     try {
       const ethereum = window.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
 
       let chainId = await ethereum.request({ method: "eth_chainId" });
 
@@ -68,12 +67,10 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
   };
 
   const connectWallet = async () => {
+    if (!ensureMetaMask()) return;
     try {
       const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
+
       const provider = new ethers.BrowserProvider(ethereum);
 
       // Ensure the contract is valid
@@ -95,7 +92,8 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
       const j1Value = extractAddressFromPaddedValue(j1ValueFromStorage);
       const j2Value = extractAddressFromPaddedValue(j2ValueFromStorage);
 
-      contractInstance = new ethers.Contract(contract, RPS.abi, provider);
+      contractInstance = await getContractInstance(contract);
+
       const stakeValue = await contractInstance.stake();
       console.log(`Stake: ${stakeValue.toString()}`);
 

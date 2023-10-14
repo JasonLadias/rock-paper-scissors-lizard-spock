@@ -1,5 +1,6 @@
 import RPS from "@/abi/RPS";
 import Anchor from "@/components/Anchor";
+import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 import { Box, Button, Typography } from "@mui/material";
 import { ethers } from "ethers";
 import { FC, useState, useEffect, useRef } from "react";
@@ -17,19 +18,11 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
 
   const checkPlayer1 = async () => {
     if (!contractAddress) return;
-    try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
+    if (!ensureMetaMask()) return;
 
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        RPS.abi,
-        provider
-      );
+    try {
+      const contractInstance = await getContractInstance(contractAddress);
+
       const currentStake = await contractInstance.stake();
       const lastMove = await contractInstance.lastAction();
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -50,20 +43,10 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
 
   const refundRequest = async () => {
     if (!contractAddress) return;
+    if (!ensureMetaMask()) return;
 
     try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        RPS.abi,
-        signer
-      );
+      const contractInstance = await getContractInstance(contractAddress, true)
       const response = await contractInstance.j1Timeout({
         value: "0",
         gasLimit: 1500000,

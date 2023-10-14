@@ -1,4 +1,5 @@
 import { GOERLI_NETWORK } from "@/utilities/constants";
+import { ensureMetaMask } from "@/utilities/helpers";
 import { Button } from "@mui/material";
 import { FC } from "react";
 
@@ -9,12 +10,9 @@ type ConnectWalletProps = {
 
 const ConnectWallet:FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
   const requestAccount = async () => {
+    if (!ensureMetaMask()) return;
     try {
       const ethereum = window.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
 
       let chainId = await ethereum.request({ method: "eth_chainId" });
 

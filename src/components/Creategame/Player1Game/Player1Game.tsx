@@ -1,5 +1,6 @@
 import RPS from "@/abi/RPS";
 import { ENUMS } from "@/utilities/constants";
+import { ensureMetaMask } from "@/utilities/helpers";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { ethers } from "ethers";
@@ -87,13 +88,11 @@ const Player1Game: FC<Player1GameProps> = ({
         ["uint8", "bytes32"],
         [ENUMS[valueSelected], randomSalt]
       );
+      if (!ensureMetaMask()) return;
 
       try {
         const ethereum = window?.ethereum;
-        if (!ethereum) {
-          alert("Please install MetaMask");
-          return;
-        }
+
         const provider = new ethers.BrowserProvider(ethereum);
         const signer = await provider.getSigner();
         const contractInstance = new ethers.ContractFactory(

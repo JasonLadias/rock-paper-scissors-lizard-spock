@@ -1,7 +1,6 @@
-import RPS from "@/abi/RPS";
 import Anchor from "@/components/Anchor";
 import { ENUMS, REVERSE_ENUMS } from "@/utilities/constants";
-import { p1wins } from "@/utilities/helpers";
+import { ensureMetaMask, getContractInstance, p1wins } from "@/utilities/helpers";
 import { Box, Button, Typography } from "@mui/material";
 import { ethers } from "ethers";
 import { FC, useState, useEffect, useRef } from "react";
@@ -24,24 +23,14 @@ const Player1Wait: FC<Player1WaitProps> = ({
   const [gameResolved, setGameResolved] = useState(false);
   const [refunded, setRefunded] = useState(false);
   const [resolved, setResolved] = useState(false);
-  const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0); // [0, 1, 2
+  const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0); 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkPlayer2 = async () => {
     if (!contractAddress) return;
+    if (!ensureMetaMask()) return;
     try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
-
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        RPS.abi,
-        provider
-      );
+      const contractInstance = await getContractInstance(contractAddress);
       const player2Move = await contractInstance.c2();
       const lastMove = await contractInstance.lastAction();
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -70,20 +59,10 @@ const Player1Wait: FC<Player1WaitProps> = ({
 
   const refundRequest = async () => {
     if (!contractAddress) return;
-
+    if (!ensureMetaMask()) return;
     try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        RPS.abi,
-        signer
-      );
+      const contractInstance = await getContractInstance(contractAddress, true);
+
       const response = await contractInstance.j2Timeout({
         value: "0",
         gasLimit: 1500000,
@@ -101,20 +80,10 @@ const Player1Wait: FC<Player1WaitProps> = ({
 
   const finishGame = async () => {
     if (!contractAddress || !valueSelected || !salt) return;
-
+    if (!ensureMetaMask()) return;
     try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const contractInstance = new ethers.Contract(
-        contractAddress,
-        RPS.abi,
-        signer
-      );
+      const contractInstance = await getContractInstance(contractAddress, true);
+
       const saltUint256 = ethers.toBigInt(salt);
 
       const response = await contractInstance.solve(

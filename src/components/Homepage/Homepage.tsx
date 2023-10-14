@@ -1,5 +1,5 @@
 import { Container, Button, Box, TextField, Typography } from "@mui/material";
-import { green, grey, yellow } from "@mui/material/colors";
+import { grey, yellow } from "@mui/material/colors";
 import { FC, useState } from "react";
 import { useRouter } from "next/router";
 import Anchor from "../Anchor";
@@ -9,8 +9,9 @@ import Head from "next/head";
 const Homepage: FC = () => {
   const router = useRouter();
   const [existingContract, setExistingContract] = useState<null | string>(null);
-  const [existingContractError, setExistingContractError] =
-    useState<boolean | string>(false);
+  const [existingContractError, setExistingContractError] = useState<
+    boolean | string
+  >(false);
 
   const handleExistingContract = (e: React.ChangeEvent<HTMLInputElement>) => {
     setExistingContract(e.target.value);
@@ -29,7 +30,6 @@ const Homepage: FC = () => {
     const ethereum = window?.ethereum;
     if (!ethereum) {
       setExistingContractError("Please Install Metamask");
-      alert("Please install MetaMask");
       return;
     }
     router.push(`/${existingContract}`);

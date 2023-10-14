@@ -1,6 +1,7 @@
 import RPS from "@/abi/RPS";
 import Anchor from "@/components/Anchor";
 import { ENUMS } from "@/utilities/constants";
+import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 import { Button, Grid, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { ethers } from "ethers";
@@ -32,15 +33,13 @@ const Player2Move: FC<Player2MoveProps> = ({
 
   const checkPlayer1 = async () => {
     if (!contract) return;
+    if (!ensureMetaMask()) return;
     try {
       const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
+
       const provider = new ethers.BrowserProvider(ethereum);
 
-      const contractInstance = new ethers.Contract(contract, RPS.abi, provider);
+      const contractInstance = await getContractInstance(contract);
       const currentStake = await contractInstance.stake();
       if (Number(currentStake) === 0) {
         setPlayer1resolved(true);
@@ -58,17 +57,12 @@ const Player2Move: FC<Player2MoveProps> = ({
     }
 
     const move = ENUMS[valueSelected]; // Convert the selected string value to its ENUMS equivalent
-
+    if (!ensureMetaMask()) return;
     try {
-      const ethereum = window?.ethereum;
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        return;
-      }
+
       setLoading(true);
-      const provider = new ethers.BrowserProvider(ethereum);
-      const signer = await provider.getSigner();
-      const contractInstance = new ethers.Contract(contract, RPS.abi, signer);
+      const contractInstance = await getContractInstance(contract, true);
+
       const response = await contractInstance.play(move, {
         value: ethers.parseEther(stake || "0"),
         gasLimit: 1500000,
