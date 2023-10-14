@@ -15,7 +15,15 @@ export type GamePageProps = {
 
 const GamePage: NextPage<GamePageProps> = ({ contract, notFound = false }) => {
   return (
-    <>{notFound ? <div>Not Exists</div> : <NoSsr><Gamepage contract={contract}/></NoSsr>}</>
+    <>
+      {notFound ? (
+        <div>Not Exists</div>
+      ) : (
+        <NoSsr>
+          <Gamepage contract={contract} />
+        </NoSsr>
+      )}
+    </>
   );
 };
 

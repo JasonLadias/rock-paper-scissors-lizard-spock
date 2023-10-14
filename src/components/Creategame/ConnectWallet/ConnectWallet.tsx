@@ -6,9 +6,9 @@ import { FC } from "react";
 type ConnectWalletProps = {
   setAddress: (address: string) => void;
   setStep: React.Dispatch<React.SetStateAction<number>>;
-}
+};
 
-const ConnectWallet:FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
+const ConnectWallet: FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
   const requestAccount = async () => {
     if (!ensureMetaMask()) return;
     try {
@@ -24,7 +24,7 @@ const ConnectWallet:FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
           method: "eth_requestAccounts",
         });
         setAddress(accounts[0]);
-        setStep((prev) => prev + 1)
+        setStep((prev) => prev + 1);
       }
     } catch (err) {
       console.log(err);
@@ -35,7 +35,7 @@ const ConnectWallet:FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
     <Button variant="contained" onClick={requestAccount}>
       Connect Wallet
     </Button>
-  )
-}
+  );
+};
 
 export default ConnectWallet;

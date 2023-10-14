@@ -10,9 +10,8 @@ export type AnchorProps = {
   onClick?: () => void;
 };
 const Anchor: FC<AnchorProps> = ({ href, children, style, onClick }) => {
-
   return (
-    <Link onClick={onClick} href={href}  style={style}>
+    <Link onClick={onClick} href={href} style={style}>
       {children}
     </Link>
   );

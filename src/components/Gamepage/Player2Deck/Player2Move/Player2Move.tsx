@@ -59,7 +59,6 @@ const Player2Move: FC<Player2MoveProps> = ({
     const move = ENUMS[valueSelected]; // Convert the selected string value to its ENUMS equivalent
     if (!ensureMetaMask()) return;
     try {
-
       setLoading(true);
       const contractInstance = await getContractInstance(contract, true);
 
@@ -92,7 +91,9 @@ const Player2Move: FC<Player2MoveProps> = ({
     <>
       {player1resolved ? (
         <>
-          <Typography variant="h6">You timed out. Player 1 has refunded the amount.</Typography>
+          <Typography variant="h6">
+            You timed out. Player 1 has refunded the amount.
+          </Typography>
           <Anchor href="/">
             <Button variant="contained">Go To Homepage</Button>
           </Anchor>

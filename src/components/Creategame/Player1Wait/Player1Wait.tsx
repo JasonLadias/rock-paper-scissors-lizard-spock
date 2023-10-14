@@ -1,6 +1,10 @@
 import Anchor from "@/components/Anchor";
 import { ENUMS, REVERSE_ENUMS } from "@/utilities/constants";
-import { ensureMetaMask, getContractInstance, p1wins } from "@/utilities/helpers";
+import {
+  ensureMetaMask,
+  getContractInstance,
+  p1wins,
+} from "@/utilities/helpers";
 import { Box, Button, Typography } from "@mui/material";
 import { ethers } from "ethers";
 import { FC, useState, useEffect, useRef } from "react";
@@ -23,7 +27,7 @@ const Player1Wait: FC<Player1WaitProps> = ({
   const [gameResolved, setGameResolved] = useState(false);
   const [refunded, setRefunded] = useState(false);
   const [resolved, setResolved] = useState(false);
-  const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0); 
+  const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkPlayer2 = async () => {
@@ -71,7 +75,6 @@ const Player1Wait: FC<Player1WaitProps> = ({
       console.log(response);
       await response.wait();
       setRefunded(true);
-      
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -94,7 +97,6 @@ const Player1Wait: FC<Player1WaitProps> = ({
       clearInterval(timerRef.current!);
       await response.wait();
       setResolved(true);
-      
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");

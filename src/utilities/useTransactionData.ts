@@ -2,10 +2,9 @@ import { useState, useEffect } from "react";
 import { ENUMS } from "./constants";
 
 const convertToObjectUint8Array = (obj: Record<string, number>): Uint8Array => {
-  const values = Object.values(obj).map(val => Number(val));
+  const values = Object.values(obj).map((val) => Number(val));
   return new Uint8Array(values);
-}
-
+};
 
 type TransactionData = {
   randomSalt: Uint8Array | null;

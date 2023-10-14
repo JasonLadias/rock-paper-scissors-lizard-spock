@@ -46,7 +46,7 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
     if (!ensureMetaMask()) return;
 
     try {
-      const contractInstance = await getContractInstance(contractAddress, true)
+      const contractInstance = await getContractInstance(contractAddress, true);
       const response = await contractInstance.j1Timeout({
         value: "0",
         gasLimit: 1500000,

@@ -122,8 +122,8 @@ const Player1Game: FC<Player1GameProps> = ({
         const object = {
           randomSalt,
           hashedMove,
-          valueSelected
-        }
+          valueSelected,
+        };
         localStorage.setItem(contractAddress, JSON.stringify(object));
       } catch (error) {
         setLoading(false);
@@ -141,7 +141,9 @@ const Player1Game: FC<Player1GameProps> = ({
         <>
           {" "}
           <Typography variant="h6">Welcome {address} </Typography>
-          <Typography variant="h6">Your Transaction is being transmitted please wait.</Typography>
+          <Typography variant="h6">
+            Your Transaction is being transmitted please wait.
+          </Typography>
         </>
       ) : (
         <>

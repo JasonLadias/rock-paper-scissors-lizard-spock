@@ -29,7 +29,7 @@ export const ensureMetaMask = (): boolean => {
 };
 
 /**
- * This function returns a contract instance. 
+ * This function returns a contract instance.
  *
  * @param contractAddress
  * @param useSigner Returns a contract instance with a signer if true

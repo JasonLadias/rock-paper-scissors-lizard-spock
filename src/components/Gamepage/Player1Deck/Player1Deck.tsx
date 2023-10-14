@@ -18,7 +18,12 @@ const Player1Deck: FC<Player1DeckProps> = ({ address, stake, contract }) => {
     <>
       {randomSalt && randomSalt?.length > 0 && hashedMove && valueSelected ? (
         <>
-          <Player1Wait contractAddress={contract} stake={stake} valueSelected={valueSelected} salt={randomSalt} />
+          <Player1Wait
+            contractAddress={contract}
+            stake={stake}
+            valueSelected={valueSelected}
+            salt={randomSalt}
+          />
         </>
       ) : (
         <>

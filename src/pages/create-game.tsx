@@ -6,5 +6,5 @@ export default function Create() {
     <NoSsr>
       <Creategame />
     </NoSsr>
-  )
+  );
 }
