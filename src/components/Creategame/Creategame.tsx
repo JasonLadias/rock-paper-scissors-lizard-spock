@@ -8,13 +8,13 @@ import {
 } from "@mui/material";
 import { yellow } from "@mui/material/colors";
 import { FC, useState, useEffect } from "react";
-import ConnectWallet from "./ConnectWallet";
+import ConnectWallet from "../ConnectWallet";
 import Player1Game from "./Player1Game";
 import { ENUMS } from "@/utilities/constants";
 import Player1Wait from "./Player1Wait";
 import Head from "next/head";
 import { useAppSelector } from "@/utilities/customHooks/storeHooks";
-import DisconnectWallet from "./DisconnectWallet";
+import DisconnectWallet from "../DisconnectWallet";
 
 const CreateGame: FC = () => {
   const { address } = useAppSelector((state) => state.wallet);

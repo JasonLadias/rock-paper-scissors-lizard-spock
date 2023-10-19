@@ -12,7 +12,7 @@ import Anchor from "../Anchor";
 import { ethers } from "ethers";
 import Head from "next/head";
 
-const Homepage: FC = () => {
+const HomePage: FC = () => {
   const router = useRouter();
   const [existingContract, setExistingContract] = useState<string>("");
   const [existingContractError, setExistingContractError] = useState<
@@ -156,4 +156,4 @@ const Homepage: FC = () => {
   );
 };
 
-export default Homepage;
+export default HomePage;

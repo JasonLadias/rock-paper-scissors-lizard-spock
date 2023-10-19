@@ -6,7 +6,7 @@ import { Button } from "@mui/material";
 import { FC } from "react";
 
 type ConnectWalletProps = {
-  setStep: React.Dispatch<React.SetStateAction<number>>;
+  setStep?: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const ConnectWallet: FC<ConnectWalletProps> = ({ setStep }) => {
@@ -27,6 +27,8 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ setStep }) => {
           method: "eth_requestAccounts",
         });
         dispatch(connectWallet(accounts[0]));
+        // Change step to 1 if setStep is passed as a prop
+        if (!setStep) return;
         setStep((prev) => prev + 1);
       }
     } catch (err) {

@@ -1,3 +1,3 @@
-import Gamepage from "./Gamepage";
+import GamePage from "./GamePage";
 
-export default Gamepage;
+export default GamePage;

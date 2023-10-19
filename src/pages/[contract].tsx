@@ -1,21 +1,21 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { NoSsr } from "@mui/material";
 import { ethers } from "ethers";
-import Gamepage from "@/components/Gamepage";
+import GamePage from "@/components/GamePage";
 
-export type GamePageProps = {
+export type GameProps = {
   contract: string;
   notFound?: boolean;
 };
 
-const GamePage: NextPage<GamePageProps> = ({ contract, notFound = false }) => {
+const Game: NextPage<GameProps> = ({ contract, notFound = false }) => {
   return (
     <>
       {notFound ? (
         <div>Not Exists</div>
       ) : (
         <NoSsr>
-          <Gamepage contract={contract} />
+          <GamePage contract={contract} />
         </NoSsr>
       )}
     </>
@@ -48,4 +48,4 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   };
 };
 
-export default GamePage;
+export default Game;

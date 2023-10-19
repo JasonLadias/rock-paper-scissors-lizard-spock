@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from "react";
 import { Container, Button, Box, Typography } from "@mui/material";
 import { ethers } from "ethers";
 import {
-  GOERLI_NETWORK,
   J1_STORAGE_POSITION,
   J2_STORAGE_POSITION,
 } from "@/utilities/constants";
@@ -12,8 +11,11 @@ import Anchor from "../Anchor";
 import { yellow } from "@mui/material/colors";
 import Head from "next/head";
 import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
+import { useAppSelector } from "@/utilities/customHooks/storeHooks";
+import ConnectWallet from "../ConnectWallet";
+import DisconnectWallet from "../DisconnectWallet";
 
-type GamepageProps = {
+type GamePageProps = {
   contract: string;
 };
 
@@ -28,41 +30,14 @@ function extractAddressFromPaddedValue(paddedValue: string): string {
   return "0x" + paddedValue.slice(-40);
 }
 
-const Gamepage: FC<GamepageProps> = ({ contract }) => {
-  const [address, setAddress] = useState<null | string>(null);
+const GamePage: FC<GamePageProps> = ({ contract }) => {
+  const { address } = useAppSelector((state) => state.wallet);
   // -1 means not a player, 1 means player 1, 2 means player 2 and null means not yet determined
   const [player, setPlayer] = useState<null | -1 | 1 | 2>(null);
   // -1 means game has been resolved, null means not yet determined
   const [stake, setStake] = useState<null | string | -1>(null);
 
   let contractInstance: ethers.Contract;
-
-  /**
-   * This function requests the user's account from MetaMask
-   * ensures the user is connected to the Goerli Test Network
-   * and sets the user's address in state
-   */
-  const requestAccount = async () => {
-    if (!ensureMetaMask()) return;
-
-    try {
-      const ethereum = window.ethereum;
-
-      let chainId = await ethereum.request({ method: "eth_chainId" });
-
-      if (chainId !== GOERLI_NETWORK) {
-        alert("Please connect to Goerli Test Network");
-        return;
-      } else {
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        setAddress(accounts[0]);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   /**
    * This function connects to the contract and checks:
@@ -172,11 +147,7 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
           Note: This game should be played on GOERLI TESTNET
         </Typography>
       </Box>
-      {!address && (
-        <Button variant="contained" onClick={requestAccount}>
-          Connect Wallet
-        </Button>
-      )}
+      {address ?  <DisconnectWallet /> : <ConnectWallet /> }
       {player && player !== -1 && (
         <Typography variant="body1">Welcome Player {player}</Typography>
       )}
@@ -220,4 +191,4 @@ const Gamepage: FC<GamepageProps> = ({ contract }) => {
   );
 };
 
-export default Gamepage;
+export default GamePage;
