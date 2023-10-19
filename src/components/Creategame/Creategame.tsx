@@ -7,15 +7,17 @@ import {
   Typography,
 } from "@mui/material";
 import { yellow } from "@mui/material/colors";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import ConnectWallet from "./ConnectWallet";
 import Player1Game from "./Player1Game";
 import { ENUMS } from "@/utilities/constants";
 import Player1Wait from "./Player1Wait";
 import Head from "next/head";
+import { useAppSelector } from "@/utilities/customHooks/storeHooks";
+import DisconnectWallet from "./DisconnectWallet";
 
-const Creategame: FC = () => {
-  const [address, setAddress] = useState<null | string>(null);
+const CreateGame: FC = () => {
+  const { address } = useAppSelector((state) => state.wallet);
   const [valueSelected, setValueSelected] = useState<null | keyof typeof ENUMS>(
     null
   );
@@ -45,7 +47,18 @@ const Creategame: FC = () => {
     setOpponentAddressError(false);
   };
 
-  const steps = ["Connect Wallet", "Create Game", "Wait For Opponent"];
+  useEffect(() => {
+    if (address && step === 0) {
+      setStep(1);
+    } 
+
+    if (!address && step !== 0) {
+      setStep(0);
+    }
+
+  }, [address, step])
+  
+  const steps = ["Connect Wallet", "Select Opponent", "Select Stake", "Select Move"];
 
   return (
     <Container
@@ -107,8 +120,11 @@ const Creategame: FC = () => {
           ))}
         </Stepper>
       </Box>
+      {address && (<Box>
+        <DisconnectWallet />
+      </Box>)}
       {step === 0 ? (
-        <ConnectWallet setAddress={setAddress} setStep={setStep} />
+        <ConnectWallet setStep={setStep} />
       ) : step === 1 ? (
         <Player1Game
           address={address}
@@ -142,4 +158,4 @@ const Creategame: FC = () => {
   );
 };
 
-export default Creategame;
+export default CreateGame;

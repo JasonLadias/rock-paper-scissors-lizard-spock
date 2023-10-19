@@ -1,3 +1,3 @@
-import Creategame from "./Creategame";
+import CreateGame from "./CreateGame";
 
-export default Creategame;
+export default CreateGame;

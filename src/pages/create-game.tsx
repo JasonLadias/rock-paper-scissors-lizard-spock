@@ -1,10 +1,10 @@
-import Creategame from "@/components/Creategame";
+import CreateGame from "@/components/CreateGame";
 import { NoSsr } from "@mui/material";
 
 export default function Create() {
   return (
     <NoSsr>
-      <Creategame />
+      <CreateGame />
     </NoSsr>
   );
 }

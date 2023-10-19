@@ -1,14 +1,17 @@
 import { GOERLI_NETWORK } from "@/utilities/constants";
+import { useAppDispatch } from "@/utilities/customHooks/storeHooks";
 import { ensureMetaMask } from "@/utilities/helpers";
+import { connectWallet } from "@/utilities/store/walletSlice";
 import { Button } from "@mui/material";
 import { FC } from "react";
 
 type ConnectWalletProps = {
-  setAddress: (address: string) => void;
   setStep: React.Dispatch<React.SetStateAction<number>>;
 };
 
-const ConnectWallet: FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
+const ConnectWallet: FC<ConnectWalletProps> = ({ setStep }) => {
+  const dispatch = useAppDispatch();
+
   const requestAccount = async () => {
     if (!ensureMetaMask()) return;
     try {
@@ -23,7 +26,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ setAddress, setStep }) => {
         const accounts = await ethereum.request({
           method: "eth_requestAccounts",
         });
-        setAddress(accounts[0]);
+        dispatch(connectWallet(accounts[0]));
         setStep((prev) => prev + 1);
       }
     } catch (err) {
