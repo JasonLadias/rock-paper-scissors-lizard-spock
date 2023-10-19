@@ -14,7 +14,7 @@ type Player1GameProps = {
   contractAddress: string | null;
   stake: string;
   valueSelected: keyof typeof ENUMS | null;
-  salt: Uint8Array | null;
+  salt: Record<string, number> | null;
 };
 
 const Player1Game: FC<Player1GameProps> = ({
@@ -23,10 +23,8 @@ const Player1Game: FC<Player1GameProps> = ({
   valueSelected,
   salt,
 }) => {
-  const { player2State, player1State, player2move, finishGame, refundRequest } =
+  const { player2State, player1State, player2move, finishGame, refundRequest, latestMove, loading } =
     usePlayer2Wait({ contractAddress, salt, valueSelected });
-
-    console.log(window.location)
 
   return (
     <Container
@@ -40,6 +38,7 @@ const Player1Game: FC<Player1GameProps> = ({
           player2move={player2move}
           valueSelected={valueSelected}
           finishGame={finishGame}
+          loading={loading}
         />
       )}
       {player2State === "timedOut" && (
@@ -47,6 +46,7 @@ const Player1Game: FC<Player1GameProps> = ({
           stake={stake}
           player1State={player1State}
           refundRequest={refundRequest}
+          loading={loading}
         />
       )}
       {player2State === "waiting" && (
@@ -54,6 +54,7 @@ const Player1Game: FC<Player1GameProps> = ({
           contractAddress={contractAddress}
           stake={stake}
           valueSelected={valueSelected}
+          latestMove={latestMove}
         />
       )}
     </Container>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FIVE_MINUTES, GAS_LIMIT } from "@/utilities/constants";
 import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
+import { OpponentPlayer1State, Player2State } from "../types";
 
 type UsePlayer1WaitProps = {
   contractAddress: string | null;
@@ -12,15 +13,15 @@ type UsePlayer1WaitProps = {
  * - Determines if Player 1 has timed out.
  * - Determines if Player 2 has been refunded.
  * - Allows Player 2 to request a refund if Player 1 has timed out.
- * 
- * @param param0 
- * @returns 
+ *
+ * @param param0
+ * @returns
  */
 const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
-  const [player1resolved, setPlayer1resolved] = useState(false);
-  const [player1timeout, setPlayer1timeout] = useState(false);
+  const [player1State, setPlayer1State] =
+    useState<OpponentPlayer1State>("waiting");
+  const [player2State, setPlayer2State] = useState<Player2State>("waiting");
   const [latestMove, setLatestMove] = useState(0);
-  const [refunded, setRefunded] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
@@ -47,11 +48,11 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
 
       // If the current stake is 0, the game is resolved by Player 1
       if (Number(currentStake) === 0) {
-        setPlayer1resolved(true);
+        setPlayer1State("resolved");
         clearInterval(timerRef.current!);
       } else if (timeDifference > FIVE_MINUTES) {
         // If the last move was over 5 minutes ago, Player 1 has timed out
-        setPlayer1timeout(true);
+        setPlayer1State("timedOut");
       }
     } catch (err) {
       console.log(err);
@@ -69,7 +70,7 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
       });
       clearInterval(timerRef.current!);
       await response.wait();
-      setRefunded(true);
+      setPlayer2State("refunded");
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -89,10 +90,9 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
   }, []);
 
   return {
-    player1resolved,
-    player1timeout,
+    player1State,
+    player2State,
     latestMove,
-    refunded,
     refundRequest,
   };
 };

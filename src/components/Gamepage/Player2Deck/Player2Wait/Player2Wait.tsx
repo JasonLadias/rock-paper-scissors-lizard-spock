@@ -9,7 +9,7 @@ type Player2WaitProps = {
 };
 
 const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
-  const { player1resolved, player1timeout, refunded, refundRequest } = usePlayer1Wait({ contractAddress });
+  const { player1State, player2State, latestMove, refundRequest } = usePlayer1Wait({ contractAddress });
 
   return (
     <Box
@@ -20,7 +20,7 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
         alignItems: "center",
       }}
     >
-      {player1resolved ? (
+      {player1State === "resolved" ? (
         <>
           <Typography variant="h6">
             The game is Resolved. Please Check your wallet to see if you win or
@@ -30,9 +30,9 @@ const Player2Wait: FC<Player2WaitProps> = ({ contractAddress, stake }) => {
             <Button variant="contained">Go To Homepage</Button>
           </Anchor>
         </>
-      ) : player1timeout ? (
+      ) : player1State === "timedOut" ? (
         <>
-          {refunded ? (
+          {player2State === "refunded" ? (
             <>
               <Typography variant="h6">
                 2 * {stake} returned to your address as Player 1 timed out

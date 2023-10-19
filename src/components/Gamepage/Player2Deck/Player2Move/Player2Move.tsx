@@ -5,28 +5,23 @@ import usePlayer1Wait from "@/utilities/customHooks/usePlayer1Wait";
 import { Button, Grid, Typography } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { ethers } from "ethers";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useState } from "react";
+import { useAppDispatch } from "@/utilities/customHooks/storeHooks";
+import { player2AddNewGame } from "@/utilities/store/gameSlice";
 
 type Player2MoveProps = {
   address: string;
   stake: string;
   contract: string;
-  handleUserPlayed: () => void;
 };
 
-const Player2Move: FC<Player2MoveProps> = ({
-  address,
-  stake,
-  contract,
-  handleUserPlayed,
-}) => {
-  const { player1resolved } = usePlayer1Wait({ contractAddress: contract });
-
+const Player2Move: FC<Player2MoveProps> = ({ address, stake, contract }) => {
+  const { player1State } = usePlayer1Wait({ contractAddress: contract });
   const [valueSelected, setValueSelected] = useState<null | keyof typeof ENUMS>(
     null
   );
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useAppDispatch();
   const handleSelectValue = (value: keyof typeof ENUMS) => {
     setValueSelected(value);
   };
@@ -58,8 +53,7 @@ const Player2Move: FC<Player2MoveProps> = ({
       await response.wait();
       // Set the contract address in local storage and set the user played to true
       // We also raise a useState flag for the parent component to know that the user has played
-      localStorage.setItem(contract, "true");
-      handleUserPlayed();
+      dispatch(player2AddNewGame(contract, valueSelected))
       setLoading(false);
     } catch (error) {
       console.error("Failed to play the game:", error);
@@ -70,7 +64,7 @@ const Player2Move: FC<Player2MoveProps> = ({
 
   return (
     <>
-      {player1resolved ? (
+      {player1State === "resolved" ? (
         <>
           <Typography variant="h6">
             You timed out. Player 1 has refunded the amount.

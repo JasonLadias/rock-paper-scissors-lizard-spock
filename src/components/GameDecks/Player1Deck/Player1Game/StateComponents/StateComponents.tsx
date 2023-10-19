@@ -1,20 +1,17 @@
 import Anchor from "@/components/Anchor";
 import { ENUMS, FIVE_MINUTES, REVERSE_ENUMS } from "@/utilities/constants";
 import { formatTime, p1wins } from "@/utilities/helpers";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import {
   Box,
   Button,
   Card,
   CardContent,
-  Container,
   Typography,
   Stack,
   Divider,
   Avatar,
   CircularProgress,
-  Snackbar,
-  Alert,
   Link,
   Tooltip,
   IconButton,
@@ -29,7 +26,6 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import MoodBadIcon from "@mui/icons-material/MoodBad";
 import HorizontalSplitIcon from "@mui/icons-material/HorizontalSplit";
 import { blue, red, green, yellow, grey } from "@mui/material/colors";
-import usePlayer1Wait from "@/utilities/customHooks/usePlayer1Wait";
 import { useCountdown } from "@/utilities/customHooks/useCountdown";
 
 export const RefundedComponent: FC<{ stake: string }> = ({ stake }) => (
@@ -50,7 +46,8 @@ export const MoveSelectedComponent: FC<{
   player2move: keyof typeof REVERSE_ENUMS;
   valueSelected: keyof typeof ENUMS | null;
   finishGame: () => void;
-}> = ({ player1State, player2move, valueSelected, finishGame }) => {
+  loading: boolean;
+}> = ({ player1State, player2move, valueSelected, finishGame, loading }) => {
   const gameOutcome =
     valueSelected && p1wins(ENUMS[valueSelected], player2move);
   const bgColor =
@@ -73,7 +70,9 @@ export const MoveSelectedComponent: FC<{
           }}
         >
           <CardContent>
-            <Typography variant="h6" sx={{ mb: 2, textAlign: 'start' }}>The game is Resolved</Typography>
+            <Typography variant="h6" sx={{ mb: 2, textAlign: "start" }}>
+              The game is Resolved
+            </Typography>
             {gameOutcome && (
               <Box
                 mb={2}
@@ -186,8 +185,9 @@ export const MoveSelectedComponent: FC<{
                 variant="contained"
                 color="primary"
                 size="large"
+                disabled={loading}
               >
-                Resolve Game
+                {loading ? <CircularProgress size={24} /> : "Resolve Game"}
               </Button>
             </Box>
           </CardContent>
@@ -201,7 +201,8 @@ export const TimedOutComponent: FC<{
   stake: string;
   player1State: string;
   refundRequest: () => void;
-}> = ({ stake, player1State, refundRequest }) => (
+  loading: boolean;
+}> = ({ stake, player1State, refundRequest, loading }) => (
   <Card
     sx={{
       p: { xs: 2, md: 4 },
@@ -216,11 +217,11 @@ export const TimedOutComponent: FC<{
     }}
   >
     <CardContent>
-      <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+      <Box display="flex" justifyContent="center" alignItems="center" mb={2} gap={2} >
         <Avatar>
-          <ErrorOutlineIcon color="error" style={{ fontSize: 40 }} />
+          <ErrorOutlineIcon color="error" />
         </Avatar>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5">
           Player 2 Timed Out
         </Typography>
       </Box>
@@ -244,8 +245,9 @@ export const TimedOutComponent: FC<{
             variant="contained"
             color="primary"
             size="large"
+            disabled={loading}
           >
-            Request Funds
+            {loading ? <CircularProgress size={24} /> : "Request Funds"}
           </Button>
         </Box>
       )}
@@ -257,10 +259,10 @@ export const WaitingComponent: FC<{
   contractAddress: string | null;
   stake: string;
   valueSelected: keyof typeof ENUMS | null;
-}> = ({ contractAddress, stake, valueSelected }) => {
+  latestMove: number;
+}> = ({ contractAddress, stake, valueSelected, latestMove }) => {
   const [copied, setCopied] = useState(false);
 
-  const { latestMove } = usePlayer1Wait({ contractAddress });
   const endTimeInSeconds = latestMove ? Number(latestMove) + FIVE_MINUTES : 0;
   const timeLeft = useCountdown(endTimeInSeconds);
 

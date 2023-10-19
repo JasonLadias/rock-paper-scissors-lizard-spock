@@ -7,6 +7,7 @@ import {
 import { ENUMS, FIVE_MINUTES, GAS_LIMIT } from "@/utilities/constants";
 import { ethers } from "ethers";
 import { OpponentPlayer2State, Player1State } from "../types";
+import { set } from "rambdax";
 
 type usePlayer2WaitProps = {
   contractAddress: string | null;
@@ -19,14 +20,21 @@ type usePlayer2WaitProps = {
  * - Determines if the game has been resolved by Player 2.
  * - Updates the game state if Player 2 has made a move.
  * - Sets a timeout if Player 2 hasn't acted in over five minutes.
- * 
- * @param param0 
- * @returns 
+ *
+ * @param param0
+ * @returns
  */
-export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlayer2WaitProps) => {
-  const [player2State, setPlayer2State] = useState<OpponentPlayer2State>("waiting");
+export const usePlayer2Wait = ({
+  contractAddress,
+  valueSelected,
+  salt,
+}: usePlayer2WaitProps) => {
+  const [player2State, setPlayer2State] =
+    useState<OpponentPlayer2State>("waiting");
   const [player1State, setPlayer1State] = useState<Player1State>("waiting");
   const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0);
+  const [loading, setLoading] = useState(false);
+  const [latestMove, setLatestMove] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
@@ -47,6 +55,10 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
       // Get the current time in seconds
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
       const timeDifference = currentTimeInSeconds - Number(lastMove);
+
+      if (Number(lastMove) > latestMove) {
+        setLatestMove(Number(lastMove));
+      }
 
       // If the current stake is 0, the game is resolved by Player 2
       if (Number(currentStake) === 0) {
@@ -72,14 +84,16 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
     if (!ensureMetaMask()) return;
     try {
       const contractInstance = await getContractInstance(contractAddress, true);
-
+      setLoading(true);
       const response = await contractInstance.j2Timeout({
         gasLimit: GAS_LIMIT,
       });
       clearInterval(timerRef.current!);
       await response.wait();
+      setLoading(false);
       setPlayer1State("refunded");
     } catch (error) {
+      setLoading(false);
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
     }
@@ -93,6 +107,7 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
 
       // Convert the salt to a BigInt
       const saltUint256 = ethers.toBigInt(convertToObjectUint8Array(salt));
+      setLoading(true);
 
       // Call the solve function with the selected value and salt as parameters
       const response = await contractInstance.solve(
@@ -101,8 +116,11 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
       );
       clearInterval(timerRef.current!);
       await response.wait();
-      setPlayer1State("resolved")
+      setLoading(false);
+
+      setPlayer1State("resolved");
     } catch (error) {
+      setLoading(false);
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
     }
@@ -124,7 +142,11 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
     player2State,
     player1State,
     player2move,
+    latestMove,
+    loading,
     finishGame,
     refundRequest,
   };
 };
+
+export default usePlayer2Wait;
