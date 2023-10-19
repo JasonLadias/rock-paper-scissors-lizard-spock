@@ -19,6 +19,7 @@ type UsePlayer1WaitProps = {
 const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
   const [player1resolved, setPlayer1resolved] = useState(false);
   const [player1timeout, setPlayer1timeout] = useState(false);
+  const [latestMove, setLatestMove] = useState(0);
   const [refunded, setRefunded] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -37,6 +38,9 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
       // Get the last move timestamp and current stake
       const currentStake = await contractInstance.stake();
       const lastMove = await contractInstance.lastAction();
+      if (Number(lastMove) > latestMove) {
+        setLatestMove(Number(lastMove));
+      }
       // Get the current time in seconds
       const currentTimeInSeconds = Math.floor(Date.now() / 1000);
       const timeDifference = currentTimeInSeconds - Number(lastMove);
@@ -87,6 +91,7 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
   return {
     player1resolved,
     player1timeout,
+    latestMove,
     refunded,
     refundRequest,
   };

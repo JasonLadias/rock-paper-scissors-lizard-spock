@@ -1,6 +1,6 @@
 import Anchor from "@/components/Anchor";
-import Player1Wait from "@/components/CreateGame/Player1Wait";
-import useTransactionData from "@/utilities/customHooks/useTransactionData";
+import Player1Game from "@/components/GameDecks/Player1Deck/Player1Game";
+import useGame from "@/utilities/customHooks/useGame";
 import { Button, Typography } from "@mui/material";
 import { FC } from "react";
 
@@ -11,19 +11,17 @@ type Player1DeckProps = {
 };
 
 const Player1Deck: FC<Player1DeckProps> = ({ address, stake, contract }) => {
-  const { randomSalt, valueSelected } = useTransactionData(contract);
+  const game = useGame({ contractAddress: contract });
 
   return (
     <>
-      {randomSalt && randomSalt?.length > 0 && valueSelected ? (
-        <>
-          <Player1Wait
-            contractAddress={contract}
-            stake={stake}
-            valueSelected={valueSelected}
-            salt={randomSalt}
-          />
-        </>
+      {game?.player1StoredMove ? (
+        <Player1Game
+          contractAddress={contract}
+          stake={stake}
+          valueSelected={game?.player1StoredMove.valueSelected}
+          salt={game.player1StoredMove.randomSalt}
+        />
       ) : (
         <>
           <Typography variant="h6">

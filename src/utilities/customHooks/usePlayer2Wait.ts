@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import {
+  convertToObjectUint8Array,
   ensureMetaMask,
   getContractInstance,
 } from "@/utilities/helpers";
 import { ENUMS, FIVE_MINUTES, GAS_LIMIT } from "@/utilities/constants";
 import { ethers } from "ethers";
+import { OpponentPlayer2State, Player1State } from "../types";
 
 type usePlayer2WaitProps = {
   contractAddress: string | null;
   valueSelected: keyof typeof ENUMS | null;
-  salt: Uint8Array | null;
+  salt: Record<string, number> | null;
 };
 
 /**
@@ -22,11 +24,8 @@ type usePlayer2WaitProps = {
  * @returns 
  */
 export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlayer2WaitProps) => {
-  const [player2played, setPlayer2played] = useState(false);
-  const [player2timeout, setPlayer2timeout] = useState(false);
-  const [gameResolved, setGameResolved] = useState(false);
-  const [refunded, setRefunded] = useState(false);
-  const [resolved, setResolved] = useState(false);
+  const [player2State, setPlayer2State] = useState<OpponentPlayer2State>("waiting");
+  const [player1State, setPlayer1State] = useState<Player1State>("waiting");
   const [player2move, setPlayer2move] = useState<0 | 1 | 2 | 3 | 4 | 5>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -51,16 +50,16 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
 
       // If the current stake is 0, the game is resolved by Player 2
       if (Number(currentStake) === 0) {
-        setGameResolved(true);
+        setPlayer2State("refunded");
         clearInterval(timerRef.current!);
       } else {
         // If the player 2 move is not 0, set the move and set player 2 played to true
         if (Number(player2Move) !== 0) {
           setPlayer2move(Number(player2Move) as 0 | 1 | 2 | 3 | 4 | 5);
-          setPlayer2played(true);
+          setPlayer2State("moveSelected");
         } else if (timeDifference > FIVE_MINUTES) {
           // If the time difference is greater than 5 minutes, set player 2 timeout to true
-          setPlayer2timeout(true);
+          setPlayer2State("timedOut");
         }
       }
     } catch (err) {
@@ -79,7 +78,7 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
       });
       clearInterval(timerRef.current!);
       await response.wait();
-      setRefunded(true);
+      setPlayer1State("refunded");
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -93,7 +92,7 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
       const contractInstance = await getContractInstance(contractAddress, true);
 
       // Convert the salt to a BigInt
-      const saltUint256 = ethers.toBigInt(salt);
+      const saltUint256 = ethers.toBigInt(convertToObjectUint8Array(salt));
 
       // Call the solve function with the selected value and salt as parameters
       const response = await contractInstance.solve(
@@ -102,7 +101,7 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
       );
       clearInterval(timerRef.current!);
       await response.wait();
-      setResolved(true);
+      setPlayer1State("resolved")
     } catch (error) {
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
@@ -122,11 +121,8 @@ export const usePlayer2Wait = ({ contractAddress, valueSelected, salt }: usePlay
   }, []);
 
   return {
-    player2played,
-    player2timeout,
-    refunded,
-    resolved,
-    gameResolved,
+    player2State,
+    player1State,
     player2move,
     finishGame,
     refundRequest,

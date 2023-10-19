@@ -50,3 +50,16 @@ export const getContractInstance = async (
   }
   return instance;
 };
+
+export const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  if (minutes === 0) return `${remainingSeconds}s`;
+  return `${minutes}m ${remainingSeconds}s`;
+};
+
+
+export const convertToObjectUint8Array = (obj: Record<string, number>): Uint8Array => {
+  const values = Object.values(obj).map((val) => Number(val));
+  return new Uint8Array(values);
+};

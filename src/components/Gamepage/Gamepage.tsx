@@ -6,7 +6,7 @@ import {
   J2_STORAGE_POSITION,
 } from "@/utilities/constants";
 import Player2Deck from "./Player2Deck";
-import Player1Deck from "./Player1Deck";
+
 import Anchor from "../Anchor";
 import { yellow } from "@mui/material/colors";
 import Head from "next/head";
@@ -14,6 +14,7 @@ import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 import { useAppSelector } from "@/utilities/customHooks/storeHooks";
 import ConnectWallet from "../ConnectWallet";
 import DisconnectWallet from "../DisconnectWallet";
+import Player1Deck from "../GameDecks/Player1Deck";
 
 type GamePageProps = {
   contract: string;
@@ -147,31 +148,22 @@ const GamePage: FC<GamePageProps> = ({ contract }) => {
           Note: This game should be played on GOERLI TESTNET
         </Typography>
       </Box>
-      {address ?  <DisconnectWallet /> : <ConnectWallet /> }
-      {player && player !== -1 && (
-        <Typography variant="body1">Welcome Player {player}</Typography>
-      )}
-      {stake && player !== -1 && (
+      {address ? <DisconnectWallet /> : <ConnectWallet />}
+      {stake === -1 && (
         <Typography variant="body1">
-          {stake === -1 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="body1">
-                This game has been resolved
-              </Typography>
-              <Anchor href="/">
-                <Button variant="contained">Go To Homepage</Button>
-              </Anchor>
-            </Box>
-          ) : (
-            `Stake: ${stake} ETH`
-          )}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="body1">This game has been resolved</Typography>
+            <Anchor href="/">
+              <Button variant="contained">Go To Homepage</Button>
+            </Anchor>
+          </Box>
         </Typography>
       )}
       {player === -1 && (

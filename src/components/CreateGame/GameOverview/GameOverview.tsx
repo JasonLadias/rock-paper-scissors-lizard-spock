@@ -147,7 +147,15 @@ const GameOverview: FC<GameOverviewProps> = ({
           {errorMessage}
         </Alert>
       </Snackbar>
-      <Card sx={{ p: 3, width: "100%", mx: "auto", mt: 3, bgcolor: blue[100] }}>
+      <Card
+        sx={{
+          p: { xs: 1, md: 3 },
+          width: "100%",
+          mx: "auto",
+          mt: 3,
+          bgcolor: blue[100],
+        }}
+      >
         <CardContent>
           <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
             Game Overview
@@ -157,7 +165,10 @@ const GameOverview: FC<GameOverviewProps> = ({
             <Avatar>
               <PersonIcon />
             </Avatar>
-            <Typography variant="body1">
+            <Typography
+              variant="body1"
+              sx={{ wordBreak: "break-all", overflowWrap: "break-word" }}
+            >
               Your Address: <strong>{address || "Not available"}</strong>
             </Typography>
           </Stack>
@@ -166,7 +177,10 @@ const GameOverview: FC<GameOverviewProps> = ({
             <Avatar>
               <PersonIcon />
             </Avatar>
-            <Typography variant="body1">
+            <Typography
+              variant="body1"
+              sx={{ wordBreak: "break-all", overflowWrap: "break-word" }}
+            >
               Opponent Address: <strong>{opponentAddress}</strong>
             </Typography>
           </Stack>
@@ -203,11 +217,7 @@ const GameOverview: FC<GameOverviewProps> = ({
         <Button variant="contained" disabled={loading} onClick={handleBack}>
           Previous
         </Button>
-        <Button
-          variant="contained"
-          disabled={loading}
-          onClick={handlePlay}
-        >
+        <Button variant="contained" disabled={loading} onClick={handlePlay}>
           {loading ? <CircularProgress size={24} /> : "Submit"}{" "}
         </Button>
       </Box>
