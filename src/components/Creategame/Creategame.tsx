@@ -9,12 +9,13 @@ import {
 import { yellow } from "@mui/material/colors";
 import { FC, useState, useEffect } from "react";
 import ConnectWallet from "../ConnectWallet";
-import Player1Game from "./Player1Game";
 import { ENUMS } from "@/utilities/constants";
-import Player1Wait from "./Player1Wait";
 import Head from "next/head";
 import { useAppSelector } from "@/utilities/customHooks/storeHooks";
-import DisconnectWallet from "../DisconnectWallet";
+import SelectOpponent from "./SelectOpponent/";
+import SelectStake from "./SelectStake";
+import SelectMove from "./SelectMove";
+import GameOverview from "./GameOverview";
 
 const CreateGame: FC = () => {
   const { address } = useAppSelector((state) => state.wallet);
@@ -29,8 +30,7 @@ const CreateGame: FC = () => {
   const [stake, setStake] = useState("");
   const [stakeError, setStakeError] = useState<boolean | string>(false);
   const [step, setStep] = useState(0);
-  const [salt, setSalt] = useState<null | Uint8Array>(null);
-  const [contractAddress, setContractAddress] = useState<null | string>(null);
+
 
   const handleSelectValue = (value: keyof typeof ENUMS) => {
     setValueSelected(value);
@@ -58,7 +58,7 @@ const CreateGame: FC = () => {
 
   }, [address, step])
   
-  const steps = ["Connect Wallet", "Select Opponent", "Select Stake", "Select Move"];
+  const steps = ["Connect Wallet", "Select Opponent", "Select Stake", "Select Move", "Overview"];
 
   return (
     <Container
@@ -68,7 +68,7 @@ const CreateGame: FC = () => {
         py: 10,
         display: "flex",
         flexDirection: "column",
-        gap: 5,
+        gap: 2,
         alignItems: "center",
       }}
     >
@@ -120,38 +120,41 @@ const CreateGame: FC = () => {
           ))}
         </Stepper>
       </Box>
-      {address && (<Box>
-        <DisconnectWallet />
-      </Box>)}
       {step === 0 ? (
         <ConnectWallet setStep={setStep} />
       ) : step === 1 ? (
-        <Player1Game
-          address={address}
+        <SelectOpponent
           setStep={setStep}
-          valueSelected={valueSelected}
           opponentAddress={opponentAddress}
-          stake={stake}
-          handleValueSelected={handleSelectValue}
           handleOpponentAddress={handleOpponentAddress}
-          handleStake={handleSetStake}
-          valueError={valueError}
           opponentAddressError={opponentAddressError}
-          stakeError={stakeError}
-          setValueError={setValueError}
           setOpponentAddressError={setOpponentAddressError}
-          setStakeError={setStakeError}
-          setSalt={setSalt}
-          setContractAddress={setContractAddress}
         />
       ) : step === 2 ? (
-        <Player1Wait
-          contractAddress={contractAddress}
+        <SelectStake
+          setStep={setStep}
+          stake={stake}
+          handleStake={handleSetStake}
+          stakeError={stakeError}
+          setStakeError={setStakeError}
+          />
+      ) : step === 3 ? (
+        <SelectMove
+          setStep={setStep}
+          valueSelected={valueSelected}
+          handleValueSelected={handleSelectValue}
+          valueError={valueError}
+          setValueError={setValueError}
+        />
+      ) : step === 4 ? (
+        <GameOverview 
+          setStep={setStep}
+          address={address}
+          opponentAddress={opponentAddress}
           stake={stake}
           valueSelected={valueSelected}
-          salt={salt}
         />
-      ) : (
+      ): (
         <div>Unknown stepIndex</div>
       )}
     </Container>

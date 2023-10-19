@@ -1,9 +1,17 @@
-import { Action, configureStore, ThunkAction, Middleware, combineReducers, PayloadAction } from "@reduxjs/toolkit";
+import {
+  Action,
+  configureStore,
+  ThunkAction,
+  Middleware,
+  combineReducers,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 
 import walletReducer, { WalletState } from "./walletSlice";
+import gameReducer, { GameState } from "./gameSlice";
 import { debounce } from "rambdax";
 
-const version = 1.3;
+const version = 1.4;
 
 const saveState = (state: any) => {
   try {
@@ -40,19 +48,27 @@ if (typeof window !== "undefined") {
 const HYDRATE = "HYDRATE";
 
 // Define your action creator
-export const hydrate = (newState: any) => ({ type: HYDRATE, payload: newState });
+export const hydrate = (newState: any) => ({
+  type: HYDRATE,
+  payload: newState,
+});
 
 type RootState = {
   wallet: WalletState;
+  game: GameState;
 };
 
 // Define a special hydrating root reducer
-const rootReducer = (state: RootState | undefined, action: PayloadAction<RootState>) => {
+const rootReducer = (
+  state: RootState | undefined,
+  action: PayloadAction<RootState>
+) => {
   if (action.type === HYDRATE) {
     return action.payload;
   } else {
     return combineReducers({
       wallet: walletReducer,
+      game: gameReducer,
     })(state, action);
   }
 };
@@ -71,6 +87,11 @@ export type AppState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
 
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppState, unknown, Action<string>>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  AppState,
+  unknown,
+  Action<string>
+>;
 
 export default store;
