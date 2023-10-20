@@ -1,9 +1,6 @@
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-} from "@mui/material";
+import { ensureMetaMask } from "@/utilities/helpers";
+import { Box, Button, Container, TextField } from "@mui/material";
+import { ethers } from "ethers";
 import { FC } from "react";
 
 type SelectStakeProps = {
@@ -12,6 +9,8 @@ type SelectStakeProps = {
   handleStake: (e: React.ChangeEvent<HTMLInputElement>) => void;
   stakeError: boolean | string;
   setStakeError: React.Dispatch<React.SetStateAction<boolean | string>>;
+  address: string | null;
+  opponentAddress: string;
 };
 
 const SelectStake: FC<SelectStakeProps> = ({
@@ -20,8 +19,10 @@ const SelectStake: FC<SelectStakeProps> = ({
   handleStake,
   stakeError,
   setStakeError,
+  address,
+  opponentAddress,
 }) => {
-  const validateInput = () => {
+  const validateInput = async () => {
     let error = false;
 
     if (!stake) {
@@ -34,11 +35,34 @@ const SelectStake: FC<SelectStakeProps> = ({
       error = true;
     }
 
+    if (address && opponentAddress && ensureMetaMask()) {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+
+      const balance = await provider.getBalance(address);
+      const balanceInEth = ethers.formatEther(balance);
+
+      if (balanceInEth < stake) {
+        setStakeError("You don't have enough balance to stake this amount");
+        error = true;
+      }
+
+      const opponentBalance = await provider.getBalance(opponentAddress);
+      const opponentBalanceInEth = ethers.formatEther(opponentBalance);
+
+      if (opponentBalanceInEth < stake) {
+        setStakeError(
+          "Your opponent doesn't have enough balance to stake this amount"
+        );
+        error = true;
+      }
+    }
+
     return error;
   };
 
   const handleNext = async () => {
-    if (!validateInput()) {
+    const error = await validateInput();
+    if (!error) {
       setStep((step) => step + 1);
     }
   };

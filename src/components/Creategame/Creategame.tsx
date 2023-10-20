@@ -137,6 +137,8 @@ const CreateGame: FC = () => {
           handleStake={handleSetStake}
           stakeError={stakeError}
           setStakeError={setStakeError}
+          address={address}
+          opponentAddress={opponentAddress}
           />
       ) : step === 3 ? (
         <SelectMove
