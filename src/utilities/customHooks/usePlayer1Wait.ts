@@ -21,6 +21,7 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
   const [player1State, setPlayer1State] =
     useState<OpponentPlayer1State>("waiting");
   const [player2State, setPlayer2State] = useState<Player2State>("waiting");
+  const [loading, setLoading] = useState(false);
   const [latestMove, setLatestMove] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -65,13 +66,16 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
 
     try {
       const contractInstance = await getContractInstance(contractAddress, true);
+      setLoading(true);
       const response = await contractInstance.j1Timeout({
         gasLimit: GAS_LIMIT,
       });
       clearInterval(timerRef.current!);
       await response.wait();
+      setLoading(false);
       setPlayer2State("refunded");
     } catch (error) {
+      setLoading(false);
       console.error("Failed to play the game:", error);
       alert("Failed to play the game. See the console for more information.");
     }
@@ -93,6 +97,7 @@ const usePlayer1Wait = ({ contractAddress }: UsePlayer1WaitProps) => {
     player1State,
     player2State,
     latestMove,
+    loading,
     refundRequest,
   };
 };

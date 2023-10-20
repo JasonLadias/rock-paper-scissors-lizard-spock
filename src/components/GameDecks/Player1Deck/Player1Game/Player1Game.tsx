@@ -8,7 +8,7 @@ import {
   RefundedComponent,
   TimedOutComponent,
   WaitingComponent,
-} from "./StateComponents/StateComponents";
+} from "../StateComponents/StateComponents";
 
 type Player1GameProps = {
   contractAddress: string | null;

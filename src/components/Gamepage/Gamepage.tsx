@@ -5,8 +5,7 @@ import {
   J1_STORAGE_POSITION,
   J2_STORAGE_POSITION,
 } from "@/utilities/constants";
-import Player2Deck from "./Player2Deck";
-
+import Player2Deck from "../GameDecks/Player2Deck";
 import Anchor from "../Anchor";
 import { yellow } from "@mui/material/colors";
 import Head from "next/head";
