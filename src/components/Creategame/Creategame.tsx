@@ -12,7 +12,7 @@ import ConnectWallet from "../ConnectWallet";
 import { ENUMS } from "@/utilities/constants";
 import Head from "next/head";
 import { useAppSelector } from "@/utilities/customHooks/storeHooks";
-import SelectOpponent from "./SelectOpponent";
+import SelectOpponent from "./SelectOpponent/SelectOpponent";
 import SelectStake from "./SelectStake";
 import SelectMove from "./SelectMove";
 import GameOverview from "./GameOverview";
