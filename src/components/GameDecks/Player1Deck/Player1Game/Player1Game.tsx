@@ -23,6 +23,7 @@ const Player1Game: FC<Player1GameProps> = ({
   valueSelected,
   salt,
 }) => {
+  console.log(salt)
   const { player2State, player1State, player2move, finishGame, refundRequest, latestMove, loading } =
     usePlayer2Wait({ contractAddress, salt, valueSelected });
 
