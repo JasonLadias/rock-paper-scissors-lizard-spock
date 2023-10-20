@@ -100,7 +100,9 @@ export const usePlayer2Wait = ({
   };
 
   const finishGame = async () => {
-    console.log(1)
+    console.log(contractAddress)
+    console.log(salt)
+    console.log(valueSelected)
     if (!contractAddress || !salt || !valueSelected) return;
     console.log(2)
     if (!ensureMetaMask()) return;
