@@ -46,6 +46,7 @@ export const ResolvedComponent: FC = () => (
     <CardContent>
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
         mb={2}
