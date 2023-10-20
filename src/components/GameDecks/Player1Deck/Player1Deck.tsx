@@ -20,7 +20,7 @@ const Player1Deck: FC<Player1DeckProps> = ({ address, stake, contract }) => {
           contractAddress={contract}
           stake={stake}
           valueSelected={game?.player1StoredMove.valueSelected}
-          salt={game.player1StoredMove.randomSalt}
+          salt={game.player1StoredMove.randomSalt instanceof Uint8Array ? null : game.player1StoredMove.randomSalt}
         />
       ) : (
         <>
