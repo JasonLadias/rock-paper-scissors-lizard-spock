@@ -1,6 +1,6 @@
 import { ENUMS } from "@/utilities/constants";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { blue, red, green } from "@mui/material/colors";
 import { FC } from "react";
 
 type SelectMoveProps = {
@@ -16,7 +16,7 @@ const SelectMove: FC<SelectMoveProps> = ({
   valueSelected,
   handleValueSelected,
   setValueError,
-  valueError
+  valueError,
 }) => {
   const validateInput = () => {
     let error = false;
@@ -37,7 +37,6 @@ const SelectMove: FC<SelectMoveProps> = ({
     setStep((step) => step - 1);
   };
 
-
   return (
     <Container
       maxWidth="sm"
@@ -53,6 +52,7 @@ const SelectMove: FC<SelectMoveProps> = ({
         direction="row"
         alignItems="flex-start"
         justifyContent="space-between"
+        gap={2}
       >
         {Object.keys(ENUMS).map((keyEnum) => {
           return (
@@ -60,23 +60,40 @@ const SelectMove: FC<SelectMoveProps> = ({
               onClick={() => handleValueSelected(keyEnum as keyof typeof ENUMS)}
               key={keyEnum}
               item
-              xs={2}
-              sx={{
-                minHeight: "100px",
-                p: 1,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                bgcolor: keyEnum === valueSelected ? blue[200] : "white",
-                border: "1px solid black",
-                borderRadius: 2,
-                "&:hover": {
-                  cursor: "pointer",
-                  bgcolor: blue[400],
-                },
-              }}
+              xs={3}
+              md={2}
+
             >
+              <Box
+                sx={{
+                  width: 100,
+                  height:  100,
+                  p: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transformStyle: "preserve-3d",
+                  transform: keyEnum === valueSelected ? "rotateY(0deg)" : "rotateY(360deg)",
+                  transition: "transform 0.3s",
+                  bgcolor: (keyEnum === valueSelected) ? green[500] : blue[500],
+                  borderRadius: 3,
+                  ":hover": {
+                    cursor: !(keyEnum === valueSelected) ? "pointer" : "not-allowed",
+                    bgcolor: !(keyEnum === valueSelected) ? green[500] : red[500],
+                    "& img": {
+                      transform: !(keyEnum === valueSelected) ? "scale(1.05)" : "unset",
+                    },
+                  },
+                }}
+              >
+                <img
+                  src={'/elements/' + keyEnum + '.jpg'}
+                  alt=""
+                  width="100%"
+                  height="100%"
+                  style={{ objectFit: "cover" }}
+                />
+              </Box>
               {keyEnum}
             </Grid>
           );
@@ -93,7 +110,11 @@ const SelectMove: FC<SelectMoveProps> = ({
         <Button variant="contained" onClick={handlePrevious}>
           Previous
         </Button>
-        <Button variant="contained" onClick={handleNext} disabled={!valueSelected}>
+        <Button
+          variant="contained"
+          onClick={handleNext}
+          disabled={!valueSelected}
+        >
           Next
         </Button>
       </Box>
