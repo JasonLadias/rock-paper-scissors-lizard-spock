@@ -100,11 +100,14 @@ export const usePlayer2Wait = ({
   };
 
   const finishGame = async () => {
+    console.log(1)
     if (!contractAddress || !salt || !valueSelected) return;
+    console.log(2)
     if (!ensureMetaMask()) return;
+    console.log(3)
     try {
       const contractInstance = await getContractInstance(contractAddress, true);
-
+      console.log(4)
       // Convert the salt to a BigInt
       const saltUint256 = ethers.toBigInt(convertToObjectUint8Array(salt));
       setLoading(true);
@@ -114,8 +117,10 @@ export const usePlayer2Wait = ({
         ENUMS[valueSelected],
         saltUint256
       );
+      console.log(5)
       clearInterval(timerRef.current!);
       await response.wait();
+      console.log(6)
       setLoading(false);
 
       setPlayer1State("resolved");
