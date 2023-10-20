@@ -46,6 +46,7 @@ const HomePage: FC = () => {
       sx={{
         height: "100vh",
         backgroundImage: `url(background.jpg), linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6))`,
+        backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundBlendMode: "darken",
         py: { xs: 4, md: 10 },
