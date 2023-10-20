@@ -29,16 +29,32 @@ import { blue, red, green, yellow, grey } from "@mui/material/colors";
 import { useCountdown } from "@/utilities/customHooks/useCountdown";
 
 export const RefundedComponent: FC<{ stake: string }> = ({ stake }) => (
-  <Box sx={{ textAlign: "center" }}>
-    <Typography variant="h6" gutterBottom>
-      You timed out. Player 2 won the game.
-    </Typography>
-    <Anchor href="/">
-      <Button variant="contained" color="primary">
-        Go To Homepage
-      </Button>
-    </Anchor>
-  </Box>
+  <Card
+    sx={{
+      p: { xs: 2, md: 4 },
+      width: "90%",
+      maxWidth: 500,
+      mx: "auto",
+      mt: 5,
+      bgcolor: grey[100],
+      boxShadow: 3,
+      borderRadius: 2,
+      textAlign: "center",
+    }}
+  >
+    <CardContent>
+      <Box sx={{ textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom>
+          You timed out. Player 2 won the game.
+        </Typography>
+        <Anchor href="/">
+          <Button variant="contained" color="primary">
+            Go To Homepage
+          </Button>
+        </Anchor>
+      </Box>
+    </CardContent>
+  </Card>
 );
 
 export const MoveSelectedComponent: FC<{
@@ -217,13 +233,17 @@ export const TimedOutComponent: FC<{
     }}
   >
     <CardContent>
-      <Box display="flex" justifyContent="center" alignItems="center" mb={2} gap={2} >
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mb={2}
+        gap={2}
+      >
         <Avatar>
           <ErrorOutlineIcon color="error" />
         </Avatar>
-        <Typography variant="h5">
-          Player 2 Timed Out
-        </Typography>
+        <Typography variant="h5">Player 2 Timed Out</Typography>
       </Box>
       {player1State === "refunded" ? (
         <>

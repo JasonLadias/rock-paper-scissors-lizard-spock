@@ -2,10 +2,10 @@ import Anchor from "@/components/Anchor";
 import { ENUMS, GAS_LIMIT } from "@/utilities/constants";
 import { ensureMetaMask, getContractInstance } from "@/utilities/helpers";
 import usePlayer1Wait from "@/utilities/customHooks/usePlayer1Wait";
-import { Button, Grid, Typography } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { Button, Grid, Typography, Container, Box,  CircularProgress } from "@mui/material";
 import { ethers } from "ethers";
 import React, { FC, useState } from "react";
+import { blue, red, green } from "@mui/material/colors";
 import { useAppDispatch } from "@/utilities/customHooks/storeHooks";
 import { player2AddNewGame } from "@/utilities/store/gameSlice";
 
@@ -53,7 +53,7 @@ const Player2Move: FC<Player2MoveProps> = ({ address, stake, contract }) => {
       await response.wait();
       // Set the contract address in local storage and set the user played to true
       // We also raise a useState flag for the parent component to know that the user has played
-      dispatch(player2AddNewGame(contract, valueSelected))
+      dispatch(player2AddNewGame(contract, valueSelected));
       setLoading(false);
     } catch (error) {
       console.error("Failed to play the game:", error);
@@ -73,18 +73,25 @@ const Player2Move: FC<Player2MoveProps> = ({ address, stake, contract }) => {
             <Button variant="contained">Go To Homepage</Button>
           </Anchor>
         </>
-      ) : loading ? (
-        <Typography variant="h6">
-          Your Transaction is being Transmitted. Please wait
-        </Typography>
       ) : (
-        <>
-          <Typography variant="h6">Please Select A Value From Below</Typography>
+        <Container
+          maxWidth="sm"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            width: "100%",
+          }}
+        >
+          <Typography variant="h6" align="center">
+            Please Select A Value From Below
+          </Typography>
           <Grid
             container
             direction="row"
             alignItems="flex-start"
             justifyContent="space-between"
+            gap={2}
           >
             {Object.keys(ENUMS).map((keyEnum) => {
               return (
@@ -94,23 +101,49 @@ const Player2Move: FC<Player2MoveProps> = ({ address, stake, contract }) => {
                   }
                   key={keyEnum}
                   item
-                  xs={2}
-                  sx={{
-                    minHeight: "100px",
-                    p: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    bgcolor: keyEnum === valueSelected ? blue[200] : "white",
-                    border: "1px solid black",
-                    borderRadius: 2,
-                    "&:hover": {
-                      cursor: "pointer",
-                      bgcolor: blue[400],
-                    },
-                  }}
+                  xs={3}
+                  md={2}
                 >
+                  <Box
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      p: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transformStyle: "preserve-3d",
+                      transform:
+                        keyEnum === valueSelected
+                          ? "rotateY(0deg)"
+                          : "rotateY(360deg)",
+                      transition: "transform 0.3s",
+                      bgcolor:
+                        keyEnum === valueSelected ? green[500] : blue[500],
+                      borderRadius: 3,
+                      ":hover": {
+                        cursor: !(keyEnum === valueSelected)
+                          ? "pointer"
+                          : "not-allowed",
+                        bgcolor: !(keyEnum === valueSelected)
+                          ? green[500]
+                          : red[500],
+                        "& img": {
+                          transform: !(keyEnum === valueSelected)
+                            ? "scale(1.05)"
+                            : "unset",
+                        },
+                      },
+                    }}
+                  >
+                    <img
+                      src={"/elements/" + keyEnum + ".jpg"}
+                      alt=""
+                      width="100%"
+                      height="100%"
+                      style={{ objectFit: "cover" }}
+                    />
+                  </Box>
                   {keyEnum}
                 </Grid>
               );
@@ -120,11 +153,11 @@ const Player2Move: FC<Player2MoveProps> = ({ address, stake, contract }) => {
             <Typography variant="h6">You Selected {valueSelected}</Typography>
           )}
           {valueSelected && (
-            <Button variant="contained" onClick={playGame}>
-              Submit
+            <Button variant="contained" onClick={playGame} disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : "Submit"}{" "}
             </Button>
           )}
-        </>
+        </Container>
       )}
     </>
   );

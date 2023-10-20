@@ -113,7 +113,7 @@ const GamePage: FC<GamePageProps> = ({ contract }) => {
       maxWidth="lg"
       sx={{
         minHeight: "100vh",
-        py: 10,
+        py: 5,
         display: "flex",
         flexDirection: "column",
         gap: 5,
@@ -123,8 +123,8 @@ const GamePage: FC<GamePageProps> = ({ contract }) => {
       <Head>
         <title key="title">Rock Paper Scissors Spock Lizard</title>
       </Head>
-      <Typography variant="h4" align="center" gutterBottom>
-        Game With Contract Address <br /> <span></span>
+      <Typography variant="h5" align="center" gutterBottom sx={{ wordBreak: "break-all", overflowWrap: "break-word" }}>
+        Game: <br /> 
         {contract}
       </Typography>
       <Box
